@@ -10,6 +10,7 @@ from openfermion.transforms import jordan_wigner
 from openfermion import generate_hamiltonian
 from pyscf import gto, scf, ao2mo, mcscf
 import time
+from scipy.optimize import minimize
 
 
 class VQE(object):
@@ -45,7 +46,8 @@ class VQE(object):
         self.final_state_vector_best = None
         self.best_vqe_params = None
         self.best_vqe_energy = None
-        self.target = "nvidia"
+        self.target = options.get("target", "nvidia")
+        self.num_qpus = 0
         self.initial_x_gates_pos = self.prepare_initial_circuit()
 
     def prepare_initial_circuit(self):
@@ -74,14 +76,19 @@ class VQE(object):
             returns: kernel
                      thetas
         """
+        if self.target in ("nvidia", "mgpu", "tensornet", "nvidia-mgpu"):
+            cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
+            target = cudaq.get_target()
+            self.num_qpus = target.num_qpus()
+            print("# num_gppus=", target.num_qpus())
+        else:
+            self.num_qpus = 0
+
         n_qubits = self.n_qubits
         n_layers = self.n_layers
         number_of_blocks = self.number_of_Q_blocks
 
-        cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
-
         kernel, thetas = cudaq.make_kernel(list)
-        # Allocate n qubits.
         qubits = kernel.qalloc(n_qubits)
 
         for init_gate_position in self.initial_x_gates_pos:
@@ -152,7 +159,10 @@ class VQE(object):
         """
         options = self.options
         mpi_support = options.get("mpi_support", False)
+        maxiter = options.get('maxiter', 100)
+        method_optimizer = options.get("optimizer", "COBYLA")
         return_final_state_vec = options.get("return_final_state_vec", False)
+        initial_parameters = options.get('initial_parameters', None)
 
         if mpi_support:
             cudaq.mpi.initialize()
@@ -161,59 +171,58 @@ class VQE(object):
             rank = cudaq.mpi.rank()
             print('# rank', rank, 'num_ranks', num_ranks)
 
-        optimizer = cudaq.optimizers.COBYLA()
-        initial_parameters = options.get('initial_parameters')
         if initial_parameters:
-            optimizer.initial_parameters = initial_parameters
+            initial_parameters = initial_parameters
         else:
-            optimizer.initial_parameters = np.random.rand(self.num_params)
+            initial_parameters = np.random.rand(self.num_params)
 
         kernel, thetas = self.layers()
-        maxiter = options.get('maxiter', 100)
-        optimizer.max_iterations = options.get('maxiter', maxiter)
-        optimizer_type = "cudaq"
         callback_energies = []
 
-        def eval(theta):
+        def cost(theta):
             """
-            Compute the energy by cudaq.observe
+            Compute the energy by using different execution types and cudaq.observe
             """
-            exp_val = cudaq.observe(kernel,
-                                    hamiltonian,
-                                    theta).expectation()
+            if self.num_qpus > 1:
+                exp_val = cudaq.observe(kernel,
+                                        hamiltonian,
+                                        theta,
+                                        execution=cudaq.parallel.mpi).expectation()
+            else:
+                exp_val = cudaq.observe(kernel,
+                                        hamiltonian,
+                                        theta).expectation()
 
-            callback_energies.append(exp_val)
             return exp_val
 
-        if optimizer_type == "cudaq":
-            print("# Using cudaq optimizer")
-            energy_optimized, best_parameters = optimizer.optimize(self.num_params, eval)
+        result_optimizer = minimize(cost,
+                                    initial_parameters,
+                                    method=method_optimizer,
+                                    options={'maxiter': maxiter})
 
-            # We add here the energy core
-            energy_core = options.get('energy_core', 0.)
-            total_opt_energy = energy_optimized + energy_core
-            callback_energies = [en + energy_core for en in callback_energies]
+        best_parameters = result_optimizer['x']
+        energy_optimized = result_optimizer['fun']
 
-            print("# Num Params:", self.num_params)
-            print("# Qubits:", self.n_qubits)
-            print("# N_layers:", self.n_layers)
-            print("# Energy after the VQE:", total_opt_energy)
+        # We add here the energy core
+        energy_core = options.get('energy_core', 0.)
+        total_opt_energy = energy_optimized + energy_core
+        callback_energies = [en + energy_core for en in callback_energies]
 
-            result = {"energy_optimized": total_opt_energy,
-                      "best_parameters": best_parameters,
-                      "callback_energies": callback_energies}
+        print("# Num Params:", self.num_params)
+        print("# Qubits:", self.n_qubits)
+        print("# N_layers:", self.n_layers)
+        print("# Energy after the VQE:", total_opt_energy)
 
-            if return_final_state_vec:
-                result["state_vec"] = self.get_state_vector(best_parameters)
-            return result
+        result = {"energy_optimized": total_opt_energy,
+                  "best_parameters": best_parameters,
+                  "callback_energies": callback_energies}
 
-        else:
-            print(f"# Optimizer {optimizer_type} not implemented")
-            exit()
+        if return_final_state_vec:
+            result["state_vec"] = self.get_state_vector(best_parameters)
+        return result
 
 
 def convert_state_big_endian(state_little_endian):
-
     state_big_endian = 0. * state_little_endian
 
     n_qubits = int(np.log2(state_big_endian.size))
@@ -238,7 +247,8 @@ def from_string_to_cudaq_spin(pauli_string, qubit):
 
 
 def get_cudaq_hamiltonian(jw_hamiltonian):
-    """ Converts an openfermion QubitOperator Hamiltonian into a cudaq.SpinOperator Hamiltonian
+    """
+        Converts an openfermion QubitOperator Hamiltonian into a cudaq.SpinOperator Hamiltonian
 
     """
 
@@ -267,6 +277,10 @@ def get_molecular_hamiltonian(
         spin=0,
         charge=0,
         verbose=0):
+    """
+        Returns a cudaq.SpinOperator Hamiltonian for a molecule
+
+    """
     molecule = gto.M(
         atom=geometry,
         spin=spin,
