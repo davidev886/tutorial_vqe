@@ -14,12 +14,16 @@ hamiltonian_o3, constant_term = get_molecular_hamiltonian(geometry=geometry,
                                                           num_active_electrons=num_active_electrons,
                                                           num_active_orbitals=num_active_orbitals)
 
+MINIMIZE_METHODS_NEW_CB = ['nelder-mead', 'powell', 'cg', 'bfgs', 'newton-cg',
+                           'l-bfgs-b', 'trust-constr', 'dogleg', 'trust-ncg',
+                           'trust-exact', 'trust-krylov', 'cobyqa']
+
 # Define some options for the VQE
 options = {'n_vqe_layers': 1,
            'maxiter': 100,
            'energy_core': constant_term,
            'return_final_state_vec': True,
-           "optimizer": "cobyla"}
+           'optimizer': 'nelder-mead'}
 
 n_qubits = 2 * num_active_orbitals
 
