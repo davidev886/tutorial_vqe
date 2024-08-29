@@ -6,7 +6,7 @@ from src.vqe_cudaq_qnp import get_molecular_hamiltonian
 from src.vqe_cudaq_qnp import VQE
 from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
 import pickle
-
+import time
 jw_hamiltonian_file = ""
 geometry = "systems/geo_o3.xyz"
 
@@ -14,7 +14,7 @@ num_active_orbitals = 12
 num_active_electrons = 9
 spin = 1
 if jw_hamiltonian_file:
-    with open(r"jw_hamiltonian_file", "rb") as hamiltonian_file:
+    with open(jw_hamiltonian_file, "rb") as hamiltonian_file:
         jw_hamiltonian = pickle.load(hamiltonian_file)
     hamiltonian, constant_term = get_cudaq_hamiltonian(jw_hamiltonian)
 else:
@@ -31,10 +31,11 @@ options = {'n_vqe_layers': 1,
            'maxiter': 1000,
            'energy_core': constant_term,
            'return_final_state_vec': False,
-           'optimizer': 'nelder-mead'}
+           'optimizer': 'nelder-mead',
+           "mpi_support": True}
 
 n_qubits = 2 * num_active_orbitals
-
+start_t = time.time()
 vqe = VQE(n_qubits=n_qubits,
           num_active_electrons=num_active_electrons,
           spin=spin,
@@ -48,3 +49,5 @@ optimized_energy = results['energy_optimized']
 energy_optimized = results['callback_energies']
 
 np.savetxt("energies.dat", energy_optimized)
+end_t = time.time()
+print("# Time for VQE [min]", (end_t-start_t) / 60)
