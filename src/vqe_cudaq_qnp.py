@@ -194,6 +194,7 @@ class VQE(object):
                                         hamiltonian,
                                         theta).expectation()
 
+            callback_energies.append(exp_val)
             return exp_val
 
         result_optimizer = minimize(cost,
