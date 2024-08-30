@@ -171,7 +171,7 @@ class VQE(object):
             rank = cudaq.mpi.rank()
             print('# rank', rank, 'num_ranks', num_ranks)
 
-        if initial_parameters:
+        if initial_parameters is not None:
             initial_parameters = initial_parameters
         else:
             initial_parameters = np.random.rand(self.num_params)
