@@ -43,6 +43,7 @@ best_parameters = None
 result_final_energy = defaultdict(list)
 
 for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 10)):
+    print(optimizer_type, num_layers)
     options = {'n_vqe_layers': num_layers,
                'maxiter': 10000,
                'energy_core': constant_term,
@@ -77,7 +78,7 @@ for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 10)):
     result_final_energy["optimizer_type"].append(optimizer_type)
     result_final_energy["time_vqe [s]"].append((end_t - start_t))
 
-    if len(result_final_energy["num_layer"]) > 1:
+    if len(result_final_energy["num_layers"]) > 1:
         df = pd.DataFrame(result_final_energy)
     else:
         df = pd.DataFrame(result_final_energy, index=[0])
