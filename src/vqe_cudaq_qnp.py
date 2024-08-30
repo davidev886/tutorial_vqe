@@ -172,9 +172,10 @@ class VQE(object):
             print('# rank', rank, 'num_ranks', num_ranks)
 
         if initial_parameters is not None:
-            initial_parameters = initial_parameters
+            initial_parameters = np.pad(initial_parameters, (0, self.num_params - len(initial_parameters)),
+                                        constant_values=0.01)
         else:
-            initial_parameters = np.random.rand(self.num_params)
+            initial_parameters = np.random.uniform(low=-np.pi, high=np.pi, size=self.num_params)
 
         kernel, thetas = self.layers()
         callback_energies = []
