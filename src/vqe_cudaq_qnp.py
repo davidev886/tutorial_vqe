@@ -278,9 +278,21 @@ def get_molecular_hamiltonian(
         charge=0,
         verbose=0):
     """
-        Returns a cudaq.SpinOperator Hamiltonian for a molecule
+     Compute the molecular Hamiltonian for a given molecule using Hartree-Fock and CASCI methods.
 
-    """
+     :param str geometry: Atomic coordinates of the molecule in the format required by PySCF.
+     :param int num_active_orbitals: Number of active orbitals for the CASCI calculation.
+     :param int num_active_electrons: Number of active electrons for the CASCI calculation.
+     :param str basis: Basis set to be used for the calculation. Default is 'cc-pVDZ'.
+     :param int spin: Spin multiplicity of the molecule. Default is 0.
+     :param int charge: Charge of the molecule. Default is 0.
+     :param int verbose: Verbosity level of the calculation. Default is 0.
+
+     :returns:
+         - hamiltonian_cudaq (object): The Hamiltonian in the format required by CUDA Quantum (cudaq).
+         - energy_core (float): The core energy part of the Hamiltonian.
+     :rtype: tuple
+     """
     molecule = gto.M(
         atom=geometry,
         spin=spin,
