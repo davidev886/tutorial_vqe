@@ -42,7 +42,7 @@ MINIMIZE_METHODS = ['nelder-mead', 'powell', 'cobyla']
 best_parameters = None
 result_final_energy = defaultdict(list)
 
-for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 20)):
+for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 10)):
     print(f"# {optimizer_type}, {num_layers}")
     if optimizer_type == 'nelder-mead':
         best_parameters = None
