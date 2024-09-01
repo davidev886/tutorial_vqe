@@ -74,13 +74,12 @@ for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 10)):
     optimized_energy = results['energy_optimized']
     callback_energies = results['callback_energies']
     best_parameters = results['best_parameters']
+    time_vqe = results['time_vqe']
 
-    end_t = time.time()
-    print("# Time for VQE [min]", (end_t - start_t) / 60)
     result_final_energy["num_layers"].append(num_layers)
     result_final_energy["optimized_energy"].append(optimized_energy)
     result_final_energy["optimizer_type"].append(optimizer_type)
-    result_final_energy["time_vqe [s]"].append((end_t - start_t))
+    result_final_energy["time_vqe [s]"].append(time_vqe)
 
     if len(result_final_energy["num_layers"]) > 1:
         df = pd.DataFrame(result_final_energy)
