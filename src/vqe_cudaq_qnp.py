@@ -213,9 +213,6 @@ class VQE(object):
                                     method=method_optimizer,
                                     options={'maxiter': maxiter})
 
-        if cudaq.mpi.is_initialized():
-            cudaq.mpi.finalize()
-
         best_parameters = result_optimizer['x']
         energy_optimized = result_optimizer['fun']
 
