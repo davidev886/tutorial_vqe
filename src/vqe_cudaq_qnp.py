@@ -160,8 +160,6 @@ class VQE(object):
         rank = 0
         if self.target in ("nvidia", ):
             # ("mgpu", "tensornet", "nvidia-mgpu"):
-            if rank == 0:
-                print(f"# Set target nvidia with options {self.target_option}")
             cudaq.set_target("nvidia", option=self.target_option)
 
             if self.target_option in ("mgpu", "mqpu"):
@@ -173,8 +171,11 @@ class VQE(object):
                 # cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
                 self.num_qpus = target.num_qpus()
                 if rank == 0:
+                    print(f"# Set target nvidia with options {self.target_option}")
                     print('# mpi is initialized? ', cudaq.mpi.is_initialized())
                     print("# num gpus=", target.num_qpus())
+            else:
+                print(f"# Set target nvidia")
         elif self.target in ('qpp-cpu', ):
             print(f"# Set target qpp-cpu")
             cudaq.set_target('qpp-cpu')
@@ -215,7 +216,7 @@ class VQE(object):
                                     initial_parameters,
                                     method=method_optimizer,
                                     options={'maxiter': maxiter})
-        print(result_optimizer)
+
         best_parameters = result_optimizer['x']
         energy_optimized = result_optimizer['fun']
 
