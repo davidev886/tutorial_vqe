@@ -159,19 +159,21 @@ class VQE(object):
         rank = 0
         if self.target in ("nvidia", ):
             # ("mgpu", "tensornet", "nvidia-mgpu"):
-            print(f"# Set target nvidia with options {self.target_option}")
+            if rank == 0:
+                print(f"# Set target nvidia with options {self.target_option}")
             cudaq.set_target("nvidia", option=self.target_option)
 
             if self.target_option in ("mgpu", "mqpu"):
                 cudaq.mpi.initialize()
-                print('# mpi is initialized? ', cudaq.mpi.is_initialized())
                 num_ranks = cudaq.mpi.num_ranks()
                 rank = cudaq.mpi.rank()
                 print('# rank', rank, 'num_ranks', num_ranks)
                 target = cudaq.get_target()
                 # cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
                 self.num_qpus = target.num_qpus()
-                print("# num gpus=", target.num_qpus())
+                if rank == 0:
+                    print('# mpi is initialized? ', cudaq.mpi.is_initialized())
+                    print("# num gpus=", target.num_qpus())
         elif self.target in ('qpp-cpu', ):
             print(f"# Set target qpp-cpu")
             cudaq.set_target('qpp-cpu')
@@ -212,7 +214,7 @@ class VQE(object):
                                     initial_parameters,
                                     method=method_optimizer,
                                     options={'maxiter': maxiter})
-
+        print(result_optimizer)
         best_parameters = result_optimizer['x']
         energy_optimized = result_optimizer['fun']
 
@@ -227,14 +229,14 @@ class VQE(object):
             print("# N_layers:", self.n_layers)
             print("# Energy after the VQE:", total_opt_energy)
 
-            result = {"energy_optimized": total_opt_energy,
-                      "best_parameters": best_parameters,
-                      "callback_energies": callback_energies}
+        result = {"energy_optimized": total_opt_energy,
+                  "best_parameters": best_parameters,
+                  "callback_energies": callback_energies}
 
-            if return_final_state_vec:
-                result["state_vec"] = self.get_state_vector(best_parameters)
+        if return_final_state_vec:
+            result["state_vec"] = self.get_state_vector(best_parameters)
 
-            return result
+        return result
 
 
 def convert_state_big_endian(state_little_endian):
