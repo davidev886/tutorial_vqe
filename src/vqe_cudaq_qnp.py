@@ -66,6 +66,7 @@ class VQE(object):
 
         return x_gates_pos_list
 
+    @cudaq.kernel
     def layers(self):
         """
             Generates the QNP ansatz circuit and returns the  kernel and the optimization paramenters thetas
@@ -156,7 +157,7 @@ class VQE(object):
         method_optimizer = options.get("optimizer", "COBYLA")
         return_final_state_vec = options.get("return_final_state_vec", False)
         initial_parameters = options.get('initial_parameters', None)
-
+        rank = 0
         if self.target in ("nvidia", ):
             # ("mgpu", "tensornet", "nvidia-mgpu"):
             print(f"# Set target nvidia with options {self.target_option}")
@@ -221,19 +222,20 @@ class VQE(object):
         total_opt_energy = energy_optimized + energy_core
         callback_energies = [en + energy_core for en in callback_energies]
 
-        print("# Num Params:", self.num_params)
-        print("# Qubits:", self.n_qubits)
-        print("# N_layers:", self.n_layers)
-        print("# Energy after the VQE:", total_opt_energy)
+        if rank == 0:
+            print("# Num Params:", self.num_params)
+            print("# Qubits:", self.n_qubits)
+            print("# N_layers:", self.n_layers)
+            print("# Energy after the VQE:", total_opt_energy)
 
-        result = {"energy_optimized": total_opt_energy,
-                  "best_parameters": best_parameters,
-                  "callback_energies": callback_energies}
+            result = {"energy_optimized": total_opt_energy,
+                      "best_parameters": best_parameters,
+                      "callback_energies": callback_energies}
 
-        if return_final_state_vec:
-            result["state_vec"] = self.get_state_vector(best_parameters)
+            if return_final_state_vec:
+                result["state_vec"] = self.get_state_vector(best_parameters)
 
-        return result
+            return result
 
 
 def convert_state_big_endian(state_little_endian):
