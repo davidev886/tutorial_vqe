@@ -52,7 +52,8 @@ for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 20)):
                'energy_core': constant_term,
                'return_final_state_vec': False,
                'optimizer': optimizer_type,
-               'mpi_support': True}
+               'target': 'nvidia',
+               'target_option': 'mqpu'}
 
     n_qubits = 2 * num_active_orbitals
     start_t = time.time()

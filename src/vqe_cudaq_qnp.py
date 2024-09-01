@@ -47,6 +47,7 @@ class VQE(object):
         self.best_vqe_params = None
         self.best_vqe_energy = None
         self.target = options.get("target", "nvidia")
+        self.target_option = options.get("target_option", "mgpu")
         self.num_qpus = 0
         self.initial_x_gates_pos = self.prepare_initial_circuit()
 
@@ -76,13 +77,6 @@ class VQE(object):
             returns: kernel
                      thetas
         """
-        if self.target in ("nvidia", "mgpu", "tensornet", "nvidia-mgpu"):
-            cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
-            target = cudaq.get_target()
-            self.num_qpus = target.num_qpus()
-            print("# num_gppus=", target.num_qpus())
-        else:
-            self.num_qpus = 0
 
         n_qubits = self.n_qubits
         n_layers = self.n_layers
@@ -158,18 +152,30 @@ class VQE(object):
         Run VQE
         """
         options = self.options
-        mpi_support = options.get("mpi_support", False)
         maxiter = options.get('maxiter', 100)
         method_optimizer = options.get("optimizer", "COBYLA")
         return_final_state_vec = options.get("return_final_state_vec", False)
         initial_parameters = options.get('initial_parameters', None)
 
-        if mpi_support:
-            cudaq.mpi.initialize()
-            print('# mpi is initialized? ', cudaq.mpi.is_initialized())
-            num_ranks = cudaq.mpi.num_ranks()
-            rank = cudaq.mpi.rank()
-            print('# rank', rank, 'num_ranks', num_ranks)
+        if self.target in ("nvidia", ):
+            # ("mgpu", "tensornet", "nvidia-mgpu"):
+            print(f"# Set target nvidia with options {self.target_option}")
+            cudaq.set_target("nvidia", option=self.target_option)
+
+            if self.target_option in ("mgpu", "mqpu"):
+                cudaq.mpi.initialize()
+                print('# mpi is initialized? ', cudaq.mpi.is_initialized())
+                num_ranks = cudaq.mpi.num_ranks()
+                rank = cudaq.mpi.rank()
+                print('# rank', rank, 'num_ranks', num_ranks)
+                target = cudaq.get_target()
+                # cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
+                self.num_qpus = target.num_qpus()
+                print("# num gpus=", target.num_qpus())
+        elif self.target in ('qpp-cpu', ):
+            print(f"# Set target qpp-cpu")
+            cudaq.set_target('qpp-cpu')
+            self.num_qpus = 0
 
         if initial_parameters is not None:
             initial_parameters = np.pad(initial_parameters, (0, self.num_params - len(initial_parameters)),
@@ -184,7 +190,12 @@ class VQE(object):
             """
             Compute the energy by using different execution types and cudaq.observe
             """
-            if self.num_qpus > 1:
+            if self.num_qpus in range(1, 5):
+                exp_val = cudaq.observe(kernel,
+                                        hamiltonian,
+                                        theta,
+                                        execution=cudaq.parallel.thread).expectation()
+            elif self.num_qpus > 4:
                 exp_val = cudaq.observe(kernel,
                                         hamiltonian,
                                         theta,
@@ -201,6 +212,9 @@ class VQE(object):
                                     initial_parameters,
                                     method=method_optimizer,
                                     options={'maxiter': maxiter})
+
+        if cudaq.mpi.is_initialized():
+            cudaq.mpi.finalize()
 
         best_parameters = result_optimizer['x']
         energy_optimized = result_optimizer['fun']
@@ -221,6 +235,7 @@ class VQE(object):
 
         if return_final_state_vec:
             result["state_vec"] = self.get_state_vector(best_parameters)
+
         return result
 
 
