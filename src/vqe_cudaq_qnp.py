@@ -250,8 +250,21 @@ def from_string_to_cudaq_spin(pauli_string, qubit):
 
 def get_cudaq_hamiltonian(jw_hamiltonian):
     """
-        Converts an openfermion QubitOperator Hamiltonian into a cudaq.SpinOperator Hamiltonian
+    Converts a Jordan-Wigner Hamiltonian to a CUDA Quantum Hamiltonian.
 
+    This function processes a given Jordan-Wigner Hamiltonian and converts it
+    into a format suitable for CUDA quantum computations. The input Hamiltonian
+    is a list of terms, where each term is a dictionary containing operators and
+    their corresponding coefficients. The function iterates through each term,
+    constructs the corresponding CUDA quantum operator, and sums up the terms to
+    produce the final CUDA quantum Hamiltonian. Additionally, it extracts any
+    constant energy offset present in the Hamiltonian.
+
+    :param jw_hamiltonian: List of Hamiltonian terms in Jordan-Wigner form. Each term
+                           is a dictionary with operators as keys and coefficients as values.
+    :type jw_hamiltonian: list of dict
+    :return: A tuple containing the CUDA quantum Hamiltonian and the core energy.
+    :rtype: tuple (float, float)
     """
 
     hamiltonian_cudaq = 0.0
