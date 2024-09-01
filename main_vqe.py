@@ -37,13 +37,16 @@ else:
                                                            num_active_electrons=num_active_electrons,
                                                            num_active_orbitals=num_active_orbitals)
 
-MINIMIZE_METHODS = ['nelder-mead', 'powell', 'cobyla', 'cobyqa']
+MINIMIZE_METHODS = ['nelder-mead', 'powell', 'cobyla']
 
 best_parameters = None
 result_final_energy = defaultdict(list)
 
-for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 10)):
+for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 20)):
     print(optimizer_type, num_layers)
+    if optimizer_type == 'nelder-mead':
+        best_parameters = None
+
     options = {'n_vqe_layers': num_layers,
                'maxiter': 10000,
                'energy_core': constant_term,
