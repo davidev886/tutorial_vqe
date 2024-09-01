@@ -43,7 +43,7 @@ best_parameters = None
 result_final_energy = defaultdict(list)
 
 for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 20)):
-    print(optimizer_type, num_layers)
+    print(f"# {optimizer_type}, {num_layers}")
     if optimizer_type == 'nelder-mead':
         best_parameters = None
 
@@ -95,4 +95,4 @@ for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 20)):
 
     np.savetxt(os.path.join(str_date, fname),
                callback_energies)
-
+    print()
