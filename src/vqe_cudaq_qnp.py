@@ -194,20 +194,20 @@ class VQE(object):
             """
             Compute the energy by using different execution types and cudaq.observe
             """
-            if num_ranks > 1:  # self.num_qpus in range(1, 5):
-                exp_val = cudaq.observe(kernel,
-                                        hamiltonian,
-                                        theta,
-                                        execution=cudaq.parallel.mpi).expectation()
-            elif num_ranks == 1:
-                exp_val = cudaq.observe(kernel,
+            # if num_ranks > 1:  # self.num_qpus in range(1, 5):
+            #     exp_val = cudaq.observe(kernel,
+            #                             hamiltonian,
+            #                             theta,
+            #                             execution=cudaq.parallel.mpi).expectation()
+            # elif num_ranks == 1:
+            exp_val = cudaq.observe(kernel,
                                         hamiltonian,
                                         theta,
                                         execution=cudaq.parallel.thread).expectation()
-            else:
-                exp_val = cudaq.observe(kernel,
-                                        hamiltonian,
-                                        theta).expectation()
+            # else:
+            #     exp_val = cudaq.observe(kernel,
+            #                             hamiltonian,
+            #                             theta).expectation()
 
             callback_energies.append(exp_val)
             return exp_val
