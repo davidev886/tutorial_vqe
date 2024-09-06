@@ -155,6 +155,7 @@ class VQE(object):
         options = self.options
         maxiter = options.get('maxiter', 100)
         method_optimizer = options.get("optimizer", "COBYLA")
+        mpi_support = any([options.get(key, False) for key in ["mpi", "mpi_support"]])
         return_final_state_vec = options.get("return_final_state_vec", False)
         initial_parameters = options.get('initial_parameters', None)
         rank = 0
@@ -194,20 +195,21 @@ class VQE(object):
             """
             Compute the energy by using different execution types and cudaq.observe
             """
-            # if num_ranks > 1:  # self.num_qpus in range(1, 5):
-            exp_val = cudaq.observe(kernel,
-                                    hamiltonian,
-                                    theta,
-                                    execution=cudaq.parallel.mpi).expectation()
-            # elif num_ranks == 1:
-            # exp_val = cudaq.observe(kernel,
-            #                             hamiltonian,
-            #                             theta,
-            #                             execution=cudaq.parallel.thread).expectation()
-            # else:
-            #     exp_val = cudaq.observe(kernel,
-            #                             hamiltonian,
-            #                             theta).expectation()
+            if self.num_qpus:
+                if mpi_support:
+                    exp_val = cudaq.observe(kernel,
+                                            hamiltonian,
+                                            theta,
+                                            execution=cudaq.parallel.mpi).expectation()
+                else:
+                    exp_val = cudaq.observe(kernel,
+                                            hamiltonian,
+                                            theta,
+                                            execution=cudaq.parallel.thread).expectation()
+            else:
+                exp_val = cudaq.observe(kernel,
+                                        hamiltonian,
+                                        theta).expectation()
 
             callback_energies.append(exp_val)
             return exp_val
