@@ -158,29 +158,38 @@ class VQE(object):
         mpi_support = any([options.get(key, False) for key in ["mpi", "mpi_support"]])
         return_final_state_vec = options.get("return_final_state_vec", False)
         initial_parameters = options.get('initial_parameters', None)
-        rank = 0
-        if self.target in ("nvidia", ):
+        if self.target == "nvidia":
             # ("mgpu", "tensornet", "nvidia-mgpu"):
             cudaq.set_target("nvidia", option=self.target_option)
-
-            if self.target_option in ("mgpu", "mqpu"):
+            target = cudaq.get_target()
+            if mpi_support:
                 cudaq.mpi.initialize()
                 num_ranks = cudaq.mpi.num_ranks()
                 rank = cudaq.mpi.rank()
                 print('# rank', rank, 'num_ranks', num_ranks)
-                target = cudaq.get_target()
-                # cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
                 self.num_qpus = target.num_qpus()
                 if rank == 0:
                     print(f"# Set target nvidia with options {self.target_option}")
                     print('# mpi is initialized? ', cudaq.mpi.is_initialized())
                     print("# num gpus=", target.num_qpus())
             else:
-                print(f"# Set target nvidia")
-        elif self.target in ('qpp-cpu', ):
+                print(f"# Set target nvidia with options {self.target_option}")
+                print("# num gpus=", target.num_qpus())
+
+        elif self.target == 'tensornet':
+            cudaq.set_target("tensornet")
+            target = cudaq.get_target()
+            # cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
+            self.num_qpus = target.num_qpus()
+
+        elif self.target == 'qpp-cpu':
             print(f"# Set target qpp-cpu")
             cudaq.set_target('qpp-cpu')
             self.num_qpus = 0
+
+        else:
+            print(f"# Target not defined")
+            exit()
 
         if initial_parameters is not None:
             initial_parameters = np.pad(initial_parameters, (0, self.num_params - len(initial_parameters)),
@@ -196,16 +205,23 @@ class VQE(object):
             Compute the energy by using different execution types and cudaq.observe
             """
             if self.num_qpus:
-                if mpi_support:
+                if self.target == "nvidia":
+                    if mpi_support:
+                        exp_val = cudaq.observe(kernel,
+                                                hamiltonian,
+                                                theta,
+                                                execution=cudaq.parallel.mpi).expectation()
+                    else:
+                        exp_val = cudaq.observe(kernel,
+                                                hamiltonian,
+                                                theta,
+                                                execution=cudaq.parallel.thread).expectation()
+                elif self.target == "tensornet":
                     exp_val = cudaq.observe(kernel,
                                             hamiltonian,
-                                            theta,
-                                            execution=cudaq.parallel.mpi).expectation()
-                else:
-                    exp_val = cudaq.observe(kernel,
-                                            hamiltonian,
-                                            theta,
-                                            execution=cudaq.parallel.thread).expectation()
+                                            theta
+                                            ).expectation()
+
             else:
                 exp_val = cudaq.observe(kernel,
                                         hamiltonian,
