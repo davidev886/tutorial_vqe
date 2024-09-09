@@ -37,7 +37,7 @@ else:
                                                            num_active_electrons=num_active_electrons,
                                                            num_active_orbitals=num_active_orbitals)
 
-MINIMIZE_METHODS = ['nelder-mead', 'powell', 'cobyla']
+MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
 
 best_parameters = None
 result_final_energy = defaultdict(list)
