@@ -224,7 +224,7 @@ class VQE(object):
                                                 hamiltonian,
                                                 theta,
                                                 execution=cudaq.parallel.thread).expectation()
-                elif self.target in ("tensornet" or "tensornet-mps"):
+                elif self.target in ("tensornet", "tensornet-mps"):
                     exp_val = cudaq.observe(kernel,
                                             hamiltonian,
                                             theta,
