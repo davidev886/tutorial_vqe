@@ -185,7 +185,7 @@ class VQE(object):
 
         elif self.target == "tensornet-mps":
             cudaq.set_target("tensornet-mps")
-            print(f"# Set target tensornet")
+            print(f"# Set target tensornet-mps")
             target = cudaq.get_target()
             # cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
             self.num_qpus = target.num_qpus()
@@ -224,7 +224,7 @@ class VQE(object):
                                                 hamiltonian,
                                                 theta,
                                                 execution=cudaq.parallel.thread).expectation()
-                elif self.target == "tensornet":
+                elif self.target in ("tensornet" or "tensornet-mps"):
                     exp_val = cudaq.observe(kernel,
                                             hamiltonian,
                                             theta,
