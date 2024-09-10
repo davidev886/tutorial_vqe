@@ -23,6 +23,8 @@ spin = 1
 geometry = "systems/geo_o3.xyz"
 basis = 'cc-pvtz'
 
+num_max_layer = 20
+
 jw_hamiltonian_file = f"fenta/ham_fenta_cc-pvtz_{num_active_electrons}e_{num_active_orbitals}o.pickle"
 
 if jw_hamiltonian_file:
@@ -42,9 +44,9 @@ MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'C
 best_parameters = None
 result_final_energy = defaultdict(list)
 
-for optimizer_type, num_layers in product(MINIMIZE_METHODS, range(1, 10)):
+for idx, (optimizer_type, num_layers) in enumerate(product(MINIMIZE_METHODS, range(1, num_max_layer + 1))):
     print(f"# {optimizer_type}, {num_layers}")
-    if optimizer_type == 'nelder-mead':
+    if idx % num_max_layer == 0:
         best_parameters = None
 
     options = {'n_vqe_layers': num_layers,
