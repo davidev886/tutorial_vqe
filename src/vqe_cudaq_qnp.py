@@ -228,7 +228,7 @@ class VQE(object):
                     exp_val = cudaq.observe(kernel,
                                             hamiltonian,
                                             theta,
-                                            execution=cudaq.parallel.thread
+                                            # execution=cudaq.parallel.thread
                                             ).expectation()
 
             else:
