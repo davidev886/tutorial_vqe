@@ -238,7 +238,7 @@ class VQE(object):
 
             callback_energies.append(exp_val)
             return exp_val
-
+        print("# start minimize")
         result_optimizer = minimize(cost,
                                     initial_parameters,
                                     method=method_optimizer,
