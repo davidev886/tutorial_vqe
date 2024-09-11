@@ -267,7 +267,7 @@ class VQE(object):
                   "best_parameters": best_parameters,
                   "callback_energies": callback_energies,
                   "time_vqe": end_t - start_t,
-                  "initial_energy": initial_energy}
+                  "initial_energy": initial_energy + energy_core}
 
         if return_final_state_vec:
             result["state_vec"] = self.get_state_vector(best_parameters)
