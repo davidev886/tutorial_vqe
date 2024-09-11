@@ -82,6 +82,7 @@ for idx, (optimizer_type, num_layers) in enumerate(product(MINIMIZE_METHODS, ran
     result_final_energy["num_layers"].append(num_layers)
     result_final_energy["optimized_energy"].append(optimized_energy)
     result_final_energy["optimizer_type"].append(optimizer_type)
+    result_final_energy["initial_energy"].append(initial_energy)
     result_final_energy["time_vqe [s]"].append(time_vqe)
 
     if len(result_final_energy["num_layers"]) > 1:
