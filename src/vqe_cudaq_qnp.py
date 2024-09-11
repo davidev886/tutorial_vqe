@@ -204,7 +204,8 @@ class VQE(object):
                                         constant_values=0.01)
         else:
             initial_parameters = np.random.uniform(low=-np.pi, high=np.pi, size=self.num_params)
-
+        print("# init params")
+        print(initial_parameters)
         kernel, thetas = self.layers()
         callback_energies = []
 
@@ -238,6 +239,9 @@ class VQE(object):
 
             callback_energies.append(exp_val)
             return exp_val
+
+        initial_energy = cost(initial_parameters)
+        print("# initial energy: ", initial_energy)
         print("# start minimize")
         result_optimizer = minimize(cost,
                                     initial_parameters,
@@ -262,7 +266,8 @@ class VQE(object):
         result = {"energy_optimized": total_opt_energy,
                   "best_parameters": best_parameters,
                   "callback_energies": callback_energies,
-                  "time_vqe": end_t - start_t}
+                  "time_vqe": end_t - start_t,
+                  "initial_energy": initial_energy}
 
         if return_final_state_vec:
             result["state_vec"] = self.get_state_vector(best_parameters)

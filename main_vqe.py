@@ -45,6 +45,7 @@ best_parameters = None
 result_final_energy = defaultdict(list)
 
 for idx, (optimizer_type, num_layers) in enumerate(product(MINIMIZE_METHODS, range(1, num_max_layer + 1))):
+    np.random.seed(1)
     print(f"# {optimizer_type}, {num_layers}")
     if idx % num_max_layer == 0:
         best_parameters = None
@@ -64,11 +65,11 @@ for idx, (optimizer_type, num_layers) in enumerate(product(MINIMIZE_METHODS, ran
               spin=spin,
               options=options)
 
-    if num_layers == 1:
-        vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
-    else:
-        # use as starting parameters the best from previous VQE
-        vqe.options['initial_parameters'] = best_parameters
+    # if num_layers == 1:
+    vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
+    # else:
+    # use as starting parameters the best from previous VQE
+    #    vqe.options['initial_parameters'] = best_parameters
 
     results = vqe.execute(hamiltonian)
 
@@ -77,7 +78,7 @@ for idx, (optimizer_type, num_layers) in enumerate(product(MINIMIZE_METHODS, ran
     callback_energies = results['callback_energies']
     best_parameters = results['best_parameters']
     time_vqe = results['time_vqe']
-
+    initial_energy = results["initial_energy"]
     result_final_energy["num_layers"].append(num_layers)
     result_final_energy["optimized_energy"].append(optimized_energy)
     result_final_energy["optimizer_type"].append(optimizer_type)
@@ -90,10 +91,19 @@ for idx, (optimizer_type, num_layers) in enumerate(product(MINIMIZE_METHODS, ran
 
     df.to_csv(f'{str_date}/energies.csv', index=False)
 
+    callback_energies = np.insert(callback_energies, 0, initial_energy)
+
     fname = f"callback_energies_fenta_{basis}_"\
             f"cas_{num_active_electrons}e_{num_active_orbitals}o_"\
             f"layer_{num_layers}_opt_{optimizer_type}.dat"
 
     np.savetxt(os.path.join(str_date, fname),
                callback_energies)
+
+    fname = f"bestparams_fenta_{basis}_"\
+            f"cas_{num_active_electrons}e_{num_active_orbitals}o_"\
+            f"layer_{num_layers}_opt_{optimizer_type}.dat"
+
+    np.savetxt(os.path.join(str_date, fname),
+               best_parameters)
     print()
