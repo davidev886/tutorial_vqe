@@ -176,18 +176,10 @@ class VQE(object):
                 print(f"# Set target nvidia with options {self.target_option}")
                 print("# num gpus=", target.num_qpus())
 
-        elif self.target == 'tensornet':
-            cudaq.set_target("tensornet")
-            print(f"# Set target tensornet")
+        elif self.target in ('tensornet', "tensornet-mps"):
+            cudaq.set_target(self.target)
+            print(f"# Set target {self.target}")
             target = cudaq.get_target()
-            # cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
-            self.num_qpus = target.num_qpus()
-
-        elif self.target == "tensornet-mps":
-            cudaq.set_target("tensornet-mps")
-            print(f"# Set target tensornet-mps")
-            target = cudaq.get_target()
-            # cudaq.set_target(self.target)  # nvidia or nvidia-mgpu
             self.num_qpus = target.num_qpus()
 
         elif self.target == 'qpp-cpu':
@@ -229,7 +221,6 @@ class VQE(object):
                     exp_val = cudaq.observe(kernel,
                                             hamiltonian,
                                             theta,
-                                            # execution=cudaq.parallel.thread
                                             ).expectation()
 
             else:
@@ -251,9 +242,9 @@ class VQE(object):
         best_parameters = result_optimizer['x']
         energy_optimized = result_optimizer['fun']
 
-        # We add here the energy core
         energy_core = options.get('energy_core', 0.)
         total_opt_energy = energy_optimized + energy_core
+        # We add here the energy core
         callback_energies = [en + energy_core for en in callback_energies]
         end_t = time.time()
 
@@ -276,6 +267,9 @@ class VQE(object):
 
 
 def convert_state_big_endian(state_little_endian):
+    """
+    Converts a state vector from little-endian format (cudaq) to big-endian format (ipie).
+    """
     state_big_endian = 0. * state_little_endian
 
     n_qubits = int(np.log2(state_big_endian.size))
@@ -289,6 +283,19 @@ def convert_state_big_endian(state_little_endian):
 
 
 def from_string_to_cudaq_spin(pauli_string, qubit):
+    """
+    Convert a Pauli string in string format to a spin operator in CUDAq format.
+
+    :param pauli_string: The Pauli string in string format ('I', 'X', 'Y', or 'Z').
+    :type pauli_string: str
+
+    :param qubit: The qubit index.
+    :type qubit: int
+
+    :return: The spin operator in CUDAq format.
+    :rtype: spin
+
+    """
     if pauli_string.lower() in ('id', 'i'):
         return 1
     elif pauli_string.lower() == 'x':
