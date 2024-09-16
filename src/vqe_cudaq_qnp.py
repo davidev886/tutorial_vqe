@@ -66,7 +66,7 @@ class VQE(object):
 
         return x_gates_pos_list
 
-    def layers(self):
+    def layers(self, state_vec=None):
         """
             Generates the QNP ansatz circuit and returns the  kernel and the optimization paramenters thetas
 
@@ -83,7 +83,11 @@ class VQE(object):
         number_of_blocks = self.number_of_Q_blocks
 
         kernel, thetas = cudaq.make_kernel(list)
-        qubits = kernel.qalloc(n_qubits)
+        # qubits = kernel.qalloc(n_qubits)
+        if state_vec is not None:
+            qubits = kernel.qalloc(n_qubits)
+        else:
+            qubits = cudaq.qvector(state_vec)
 
         for init_gate_position in self.initial_x_gates_pos:
             kernel.x(qubits[init_gate_position])
