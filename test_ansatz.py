@@ -31,8 +31,7 @@ def get_unitary(kernel, param_list, num_qubits): # cudaq.kernel, num_qubits: int
 
     return U
 
-
-if __name__ == "__main__":
+def main():
     n_qubits = 4
     num_act_orbitals = n_qubits // 2
     num_active_electrons = 2
@@ -62,3 +61,7 @@ if __name__ == "__main__":
     print(not np.any(correlator_2))
 
     print(not np.any(correlator_3))
+
+
+if __name__ == "__main__":
+    main()
