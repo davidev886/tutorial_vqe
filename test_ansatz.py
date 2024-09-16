@@ -16,7 +16,7 @@ from openfermion.linalg import get_sparse_operator
 from openfermion.hamiltonians import s_squared_operator, sz_operator, number_operator
 
 
-def get_unitary(kernel, num_qubits): # cudaq.kernel, num_qubits: int) -> np.ndarray:
+def get_unitary(kernel, param_list, num_qubits): # cudaq.kernel, num_qubits: int) -> np.ndarray:
     """Return the unitary matrix of a `cudaq.kernel`. Currently relies on simulation, could change in future releases
     of cudaq."""
 
@@ -27,7 +27,7 @@ def get_unitary(kernel, num_qubits): # cudaq.kernel, num_qubits: int) -> np.ndar
         state_j = np.zeros((N), dtype=np.complex128)
         state_j[j] = 1.0
 
-        U[:, j] = np.array(cudaq.get_state(kernel, state_j), copy=False)
+        U[:, j] = np.array(cudaq.get_state(kernel, param_list, state_j), copy=False)
 
     return U
 
@@ -44,8 +44,8 @@ if __name__ == "__main__":
               options={})
 
     kernel, thetas = vqe.layers()
-
-    U = get_unitary(kernel, n_qubits)
+    param_list = np.random.rand(vqe.num_params)
+    U = get_unitary(kernel, param_list, n_qubits)
 
     spin_s_square_sparse = get_sparse_operator(s_squared_operator(num_act_orbitals))
     spin_s_z_sparse = get_sparse_operator(sz_operator(num_act_orbitals))
