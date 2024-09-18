@@ -8,10 +8,11 @@ from src.vqe_cudaq_qnp import convert_state_big_endian
 
 from openfermion.linalg import get_sparse_operator
 from openfermion.hamiltonians import s_squared_operator, sz_operator, number_operator
+from typing import List
 
 
 @cudaq.kernel
-def vqe_ansatz(params, input_state):
+def vqe_ansatz(params: List[float], input_state: List[complex]):
     thetas = params
     n_qubits = int(np.log2(input_state.size))
     n_layers = 1
