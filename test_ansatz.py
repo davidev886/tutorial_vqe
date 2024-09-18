@@ -3,7 +3,7 @@ Text the ansatz
 """
 import numpy as np
 import cudaq
-from src.vqe_cudaq_qnp import VQE
+
 from src.vqe_cudaq_qnp import convert_state_big_endian
 
 from openfermion.linalg import get_sparse_operator
