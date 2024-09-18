@@ -16,12 +16,6 @@ from openfermion.linalg import get_sparse_operator
 from openfermion.hamiltonians import s_squared_operator, sz_operator, number_operator
 
 
-
-def kernel(input_state: List[complex]):
-    qubits = cudaq.qvector(input_state)
-
-    y.ctrl(qubits[0], qubits[1])
-
 @cudaq.kernel
 def vqe_ansatz(params, input_state):
     thetas = params
