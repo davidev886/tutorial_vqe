@@ -14,6 +14,7 @@ from typing import List
 @cudaq.kernel
 def vqe_ansatz(params: List[float], input_state: List[complex]):
     thetas = params
+    print(len(input_state))
     n_qubits = int(np.log2(len(input_state)))
     n_layers = 1
     number_of_blocks = n_qubits // 2 - 1
