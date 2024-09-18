@@ -4,13 +4,7 @@ Text the ansatz
 import numpy as np
 import cudaq
 from src.vqe_cudaq_qnp import VQE
-from src.vqe_cudaq_qnp import get_cudaq_hamiltonian, convert_state_big_endian
-import pickle
-from itertools import product
-import time
-import pandas as pd
-import os
-from datetime import datetime
+from src.vqe_cudaq_qnp import convert_state_big_endian
 
 from openfermion.linalg import get_sparse_operator
 from openfermion.hamiltonians import s_squared_operator, sz_operator, number_operator
@@ -97,15 +91,11 @@ def get_unitary(param_list, num_qubits):  # cudaq.kernel, num_qubits: int) -> np
 def main():
     n_qubits = 4
     num_act_orbitals = n_qubits // 2
-    num_active_electrons = 2
-    spin = 0
 
-    vqe = VQE(n_qubits=n_qubits,
-              num_active_electrons=num_active_electrons,
-              spin=spin,
-              options={})
+    n_layers = 1
+    num_params = 2 * (n_qubits // 2 - 1)
 
-    param_list = np.random.rand(vqe.num_params)
+    param_list = np.random.rand(num_params)
     U = get_unitary(param_list, n_qubits)
 
     spin_s_square_sparse = get_sparse_operator(s_squared_operator(num_act_orbitals))
