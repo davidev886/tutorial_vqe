@@ -36,7 +36,7 @@ def vqe_ansatz(params: List[float], input_state: List[complex]):
 
                 cx(d, b)
                 cx(d, a)
-                rz(parameter=-np.pi / 2, target=a)
+                rz(-np.pi / 2, target=a)
                 s(b)
                 h(d)
                 cx(d, c)
