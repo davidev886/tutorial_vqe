@@ -29,7 +29,11 @@ def vqe_ansatz(params: List[float], input_state: List[complex]):
                 # and NO controlled Y rotations.
                 # See Appendix E1 of Anselmetti et al New J. Phys. 23 (2021) 113010
 
-                a, b, c, d = qubits
+                a = qubits[0]
+                b = qubits[1]
+                c = qubits[2]
+                d = qubits[3]
+
                 cx(d, b)
                 cx(d, a)
                 rz(parameter=-np.pi / 2, target=a)
