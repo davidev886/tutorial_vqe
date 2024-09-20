@@ -12,10 +12,10 @@ from typing import List
 
 
 @cudaq.kernel
-def vqe_ansatz(params: List[float], input_state: List[complex], n_qubits: int):
+def vqe_ansatz(params: List[float], input_state: List[complex]):
     thetas = params
     n_layers = 1
-    number_of_blocks = n_qubits // 2 - 1
+#     number_of_blocks = n_qubits // 2 - 1
 
     qubits = cudaq.qvector(input_state)
 
@@ -81,7 +81,7 @@ def get_unitary(param_list, num_qubits):  # cudaq.kernel, num_qubits: int) -> np
     for j in range(N):
         state_j = np.zeros((N), dtype=np.complex128)
         state_j[j] = 1.0
-        state_ansatz = convert_state_big_endian(cudaq.get_state(vqe_ansatz, param_list, state_j, num_qubits))
+        state_ansatz = convert_state_big_endian(cudaq.get_state(vqe_ansatz, param_list, state_j))
 
         U[:, j] = np.array(state_ansatz, copy=False)
 
