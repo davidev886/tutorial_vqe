@@ -66,10 +66,10 @@ def vqe_ansatz(params: List[float], input_state: List[complex]):
                 count_params += 1
 
                 # Orbital rotation
-                fermionic_swap(np.pi, b, c)
+                # fermionic_swap(np.pi, b, c)
                 givens_rotation((-1 / 2) * thetas[count_params], a, b)
                 givens_rotation((-1 / 2) * thetas[count_params], c, d)
-                fermionic_swap(np.pi, b, c)
+                # fermionic_swap(np.pi, b, c)
                 count_params += 1
 
     # return kernel, thetas
