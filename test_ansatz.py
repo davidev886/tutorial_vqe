@@ -21,15 +21,15 @@ def vqe_ansatz(params: List[float], input_state: List[complex], n_qubits: int):
 
     count_params = 0
     for idx_layer in range(n_layers):
-        for starting_block_num in [0, 1]:
-            for idx_block in range(starting_block_num, number_of_blocks, 2):
-                qubit_list = [qubits[2 * idx_block + j] for j in range(4)]
+        # for starting_block_num in [0, 1]:
+            # for idx_block in range(starting_block_num, number_of_blocks, 2):
+                #qubit_list = [qubits[2 * idx_block + j] for j in range(4)]
 
                 # PX gates decomposed in terms of standard gates
                 # and NO controlled Y rotations.
                 # See Appendix E1 of Anselmetti et al New J. Phys. 23 (2021) 113010
 
-                a, b, c, d = qubit_list
+                a, b, c, d = qubits
                 cx(d, b)
                 cx(d, a)
                 rz(parameter=-np.pi / 2, target=a)
