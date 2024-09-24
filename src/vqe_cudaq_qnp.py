@@ -398,4 +398,4 @@ def get_molecular_hamiltonian(
     end = time.time()
     print("# Time for preparing the cudaq Hamiltonian:", end - start)
 
-    return hamiltonian_cudaq, energy_core
+    return hamiltonian_cudaq, energy_core, molecule

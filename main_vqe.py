@@ -35,7 +35,7 @@ if jw_hamiltonian_file:
     time_e = time.time()
     print("Time for converting openfermion to cudaquantum spinop", time_e - time_s)
 else:
-    hamiltonian, constant_term = get_molecular_hamiltonian(geometry=geometry,
+    hamiltonian, constant_term, molecule = get_molecular_hamiltonian(geometry=geometry,
                                                            num_active_electrons=num_active_electrons,
                                                            num_active_orbitals=num_active_orbitals)
 
