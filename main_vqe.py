@@ -27,17 +27,12 @@ num_max_layer = 20
 
 jw_hamiltonian_file = f"fenta/ham_fenta_cc-pvtz_{num_active_electrons}e_{num_active_orbitals}o.pickle"
 
-if jw_hamiltonian_file:
-    time_s = time.time()
-    with open(jw_hamiltonian_file, "rb") as hamiltonian_file:
-        jw_hamiltonian = pickle.load(hamiltonian_file)
-    hamiltonian, constant_term = get_cudaq_hamiltonian(jw_hamiltonian)
-    time_e = time.time()
-    print("Time for converting openfermion to cudaquantum spinop", time_e - time_s)
-else:
-    hamiltonian, scf_data = get_molecular_hamiltonian(geometry=geometry,
-                                                           num_active_electrons=num_active_electrons,
-                                                           num_active_orbitals=num_active_orbitals)
+time_s = time.time()
+with open(jw_hamiltonian_file, "rb") as hamiltonian_file:
+    jw_hamiltonian = pickle.load(hamiltonian_file)
+hamiltonian, constant_term = get_cudaq_hamiltonian(jw_hamiltonian)
+time_e = time.time()
+print("Time for converting openfermion to cudaquantum spinop", time_e - time_s)
 
 MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
 
@@ -52,7 +47,7 @@ for idx, (optimizer_type, num_layers) in enumerate(product(MINIMIZE_METHODS, ran
 
     options = {'n_vqe_layers': num_layers,
                'maxiter': 10000,
-               'energy_core': scf_data["energy_core"],
+               'energy_core': constant_term,
                'return_final_state_vec': False,
                'optimizer': optimizer_type,
                'target': 'nvidia',
