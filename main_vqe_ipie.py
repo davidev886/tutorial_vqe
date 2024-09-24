@@ -15,11 +15,11 @@ from ipie.analysis.extraction import extract_observable
 from src.utils_ipie import get_afqmc_data
 
 num_active_orbitals = 5
-num_active_electrons = 5
-spin = 1
-geometry = "systems/geo_fenta.xyz"
+num_active_electrons = 8
+spin = 0
+geometry = "systems/geo_o3.xyz"
 basis = "sto-3g"
-num_vqe_layers = 2
+num_vqe_layers = 1
 random_seed = 1
 
 n_qubits = 2 * num_active_orbitals
@@ -35,7 +35,7 @@ np.random.seed(random_seed)
 print(f"# {optimizer_type}, {num_vqe_layers}")
 
 options = {'n_vqe_layers': num_vqe_layers,
-           'maxiter': 10000,
+           'maxiter': 100,
            'energy_core': pyscf_data["energy_core"],
            'return_final_state_vec': True,
            'optimizer': optimizer_type,
