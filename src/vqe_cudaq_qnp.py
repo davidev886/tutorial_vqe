@@ -11,6 +11,7 @@ from openfermion import generate_hamiltonian
 from pyscf import gto, scf, ao2mo, mcscf
 import time
 from scipy.optimize import minimize
+from ipie.utils.from_pyscf import get_ortho_ao
 
 
 class VQE(object):
@@ -378,6 +379,16 @@ def get_molecular_hamiltonian(
     # Run Hartree-Fock
     hartee_fock.kernel()
 
+    hcore = scf.hf.get_hcore(molecule)
+    s1e = molecule.intor("int1e_ovlp_sph")
+    X = get_ortho_ao(s1e)
+
+    scf_data = {"mol": molecule,
+                "mo_occ": hartee_fock.mo_occ,
+                "hcore": hcore,
+                "X": X,
+                "mo_coeff": hartee_fock.mo_coeff}
+
     my_casci = mcscf.CASCI(hartee_fock, num_active_orbitals, num_active_electrons)
     ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
     my_casci.fix_spin_(ss=ss)
@@ -389,13 +400,16 @@ def get_molecular_hamiltonian(
     h2 = my_casci.get_h2eff()
     h2_no_symmetry = ao2mo.restore('1', h2, num_active_orbitals)
     tbi = np.asarray(h2_no_symmetry.transpose(0, 2, 3, 1), order='C')
+    scf_data["energy_core"] = energy_core
 
     mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
     jw_hamiltonian = jordan_wigner(mol_ham)
-    print("# Preparing the cudaq Hamiltonian")
+    if verbose:
+        print("# Preparing the cudaq Hamiltonian")
     start = time.time()
     hamiltonian_cudaq, energy_core = get_cudaq_hamiltonian(jw_hamiltonian)
     end = time.time()
-    print("# Time for preparing the cudaq Hamiltonian:", end - start)
+    if verbose:
+        print("# Time for preparing the cudaq Hamiltonian:", end - start)
 
-    return hamiltonian_cudaq, energy_core, molecule
+    return hamiltonian_cudaq, scf_data
