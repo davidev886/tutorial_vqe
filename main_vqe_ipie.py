@@ -14,6 +14,8 @@ from ipie.qmc.afqmc import AFQMC
 from ipie.analysis.extraction import extract_observable
 from src.utils_ipie import get_afqmc_data
 
+import matplotlib.pyplot as plt
+
 num_active_orbitals = 5
 num_active_electrons = 8
 spin = 0
@@ -53,6 +55,7 @@ result = vqe.execute(hamiltonian)
 
 # Best energy from VQE
 optimized_energy = result['energy_optimized']
+vqe_energies = result["callback_energies"]
 # Final state vector from VQE
 final_state_vector = result["state_vec"]
 
@@ -78,3 +81,17 @@ afqmc_msd.finalise(verbose=False)
 
 # Extract the energies
 qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
+
+vqe_y = vqe_energies
+vqe_x = list(range(len(vqe_y)))
+plt.plot(vqe_x, vqe_y, label="VQE")
+
+afqmc_y = list(qmc_data["ETotal"])
+afqmc_x = [i + vqe_x[-1] for i in list(range(len(afqmc_y)))]
+plt.plot(afqmc_x, afqmc_y, label="AFQMC")
+
+plt.xlabel("Optimization steps")
+plt.ylabel("Energy [Ha]")
+plt.legend()
+
+plt.savefig('vqe_afqmc_plot.png')
