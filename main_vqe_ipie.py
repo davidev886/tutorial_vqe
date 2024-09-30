@@ -37,7 +37,7 @@ print(f"# {optimizer_type}, {num_vqe_layers}")
 
 options = {'n_vqe_layers': num_vqe_layers,
            'maxiter': 100,
-           'energy_core': pyscf_data["energy_core"],
+           'energy_core': pyscf_data["energy_core_cudaq_ham"],
            'return_final_state_vec': True,
            'optimizer': optimizer_type,
            'target': 'nvidia',
