@@ -402,6 +402,11 @@ def get_molecular_hamiltonian(
     tbi = np.asarray(h2_no_symmetry.transpose(0, 2, 3, 1), order='C')
     scf_data["energy_core"] = energy_core
 
+    n_elec = [(num_active_electrons + spin) // 2,
+              (num_active_electrons - spin) // 2]
+
+    scf_data["num_active_electrons"] = n_elec
+
     mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
     jw_hamiltonian = jordan_wigner(mol_ham)
     if verbose:

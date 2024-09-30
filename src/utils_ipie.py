@@ -27,10 +27,10 @@ def signature_permutation(orbital_list):
     return (-1) ** transposition_count
 
 
-def get_coeff_wf(final_state_vector, n_elec, spin=0, thres=1e-6):
+def get_coeff_wf(final_state_vector, n_active_electrons, thres=1e-6):
     """
     :param final_state_vector: State vector from a VQE simulation
-    :param n_elec: list with number of total electrons in molecule
+    :param n_active_electrons: list with number of electrons in active space
     :param spin: spin
     :param thres: Threshold for coefficients to keep from VQE wavefunction
     :returns: Input for ipie trial: coefficients, list of occupied alpha, list of occupied bets
@@ -137,7 +137,7 @@ def get_afqmc_data(scf_data, final_state_vector):
                                                               chol_cut=1e-5)
     molecule = scf_data["mol"]
     spin = molecule.spin
-    n_elec = molecule.nelec
+    n_active_electrons = scf_data["num_active_electrons"]
 
     num_basis = cholesky_vectors.shape[1]
     num_chol = cholesky_vectors.shape[0]
@@ -151,17 +151,17 @@ def get_afqmc_data(scf_data, final_state_vector):
     )
 
     wavefunction = get_coeff_wf(final_state_vector,
-                                n_elec=n_elec,
+                                n_active_electrons=n_active_electrons,
                                 spin=spin
                                 )
-
+    print("here")
     trial_wavefunction = ParticleHole(
         wavefunction,
         molecule.nelec,
         afqmc_hamiltonian.nbasis,
         num_dets_for_props=len(wavefunction[0]),
         verbose=False)
-
+    print("here2")
     trial_wavefunction.compute_trial_energy = True
     trial_wavefunction.build()
     trial_wavefunction.half_rotate(afqmc_hamiltonian)
