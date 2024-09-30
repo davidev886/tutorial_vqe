@@ -220,7 +220,9 @@ class VQE(object):
                                             hamiltonian,
                                             theta,
                                             ).expectation()
-
+                else:
+                    print(f"Target {self.target} not supported")
+                    exit()
             else:
                 exp_val = cudaq.observe(kernel,
                                         hamiltonian,
