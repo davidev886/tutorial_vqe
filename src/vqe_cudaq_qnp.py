@@ -229,8 +229,9 @@ class VQE(object):
             callback_energies.append(exp_val)
             return exp_val
 
+        energy_core = options.get('energy_core', 0.)
         initial_energy = cost(initial_parameters)
-        print("# Initial energy: ", initial_energy)
+        print("# Initial energy: ", initial_energy + energy_core)
         print("# Start VQE minimization")
         result_optimizer = minimize(cost,
                                     initial_parameters,
@@ -240,12 +241,12 @@ class VQE(object):
         best_parameters = result_optimizer['x']
         energy_optimized = result_optimizer['fun']
 
-        energy_core = options.get('energy_core', 0.)
         total_opt_energy = energy_optimized + energy_core
         # We add here the energy core
         callback_energies = [en + energy_core for en in callback_energies]
         end_t = time.time()
-
+        final_energy = cost(best_parameters)
+        print("# Final energy: ", final_energy + energy_core)
         print("# Num Params:", self.num_params)
         print("# Qubits:", self.n_qubits)
         print("# N_layers:", self.n_layers)
