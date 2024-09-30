@@ -49,7 +49,7 @@ def get_coeff_wf(final_state_vector, n_active_electrons, thres=1e-6):
             occ_beta = np.where([int(_) for _ in beta_ket])[0]
             occ_orbitals = np.append(2 * occ_alpha, 2 * occ_beta + 1)
 
-            if (len(occ_alpha) == n_elec[0]) and (len(occ_beta) == n_elec[1]):
+            if (len(occ_alpha) == n_active_electrons[0]) and (len(occ_beta) == n_active_electrons[1]):
                 coeff.append(signature_permutation(occ_orbitals) * val)
                 occas.append(occ_alpha)
                 occbs.append(occ_beta)
@@ -152,7 +152,6 @@ def get_afqmc_data(scf_data, final_state_vector):
 
     wavefunction = get_coeff_wf(final_state_vector,
                                 n_active_electrons=n_active_electrons,
-                                spin=spin
                                 )
     print("here")
     trial_wavefunction = ParticleHole(
