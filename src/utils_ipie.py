@@ -158,7 +158,7 @@ def get_afqmc_data(scf_data, final_state_vector):
     trial_wavefunction = ParticleHole(
         wavefunction,
         molecule.nelec,
-        afqmc_hamiltonian.num_basis,
+        afqmc_hamiltonian.nbasis,
         num_dets_for_props=len(wavefunction[0]),
         verbose=False)
 
