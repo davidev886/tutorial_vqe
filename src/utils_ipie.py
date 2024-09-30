@@ -68,7 +68,7 @@ def gen_ipie_input_from_pyscf_chk(
         ortho_ao: bool = False,
         num_frozen_core: int = 0):
     """Generate AFQMC data from PYSCF (molecular) MCSCF simulation.
-        Adapted from ipie.utils.from_pyscf: returns hamiltonian and wavefunction instead of writing on files
+        Adapted from ipie.utils.from_pyscf: returns hamiltonian instead of writing on files
     """
     # if mcscf:
     #     scf_data = load_from_pyscf_chkfile(pyscf_chkfile, base="mcscf")
