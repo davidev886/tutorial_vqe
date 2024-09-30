@@ -27,17 +27,15 @@ def signature_permutation(orbital_list):
     return (-1) ** transposition_count
 
 
-def get_coeff_wf(final_state_vector, n_active_elec, spin=0, thres=1e-6):
+def get_coeff_wf(final_state_vector, n_elec, spin=0, thres=1e-6):
     """
     :param final_state_vector: State vector from a VQE simulation
-    :param n_active_elec: Number of total electrons in active space
+    :param n_elec: list with number of total electrons in molecule
     :param spin: spin
     :param thres: Threshold for coefficients to keep from VQE wavefunction
     :returns: Input for ipie trial: coefficients, list of occupied alpha, list of occupied bets
     """
     n_qubits = int(np.log2(final_state_vector.size))
-    n_elec = [(n_active_elec + spin) // 2,
-              (n_active_elec - spin) // 2]
 
     coeff = []
     occas = []
@@ -138,6 +136,8 @@ def get_afqmc_data(scf_data, final_state_vector):
                                                               mcscf=True,
                                                               chol_cut=1e-5)
     molecule = scf_data["mol"]
+    spin = molecule.spin
+    n_elec = molecule.nelec
 
     num_basis = cholesky_vectors.shape[1]
     num_chol = cholesky_vectors.shape[0]
@@ -151,7 +151,7 @@ def get_afqmc_data(scf_data, final_state_vector):
     )
 
     wavefunction = get_coeff_wf(final_state_vector,
-                                n_active_elec=num_active_electrons,
+                                n_elec=n_elec,
                                 spin=spin
                                 )
 
