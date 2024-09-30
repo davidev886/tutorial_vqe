@@ -416,4 +416,4 @@ def get_molecular_hamiltonian(
     if verbose:
         print("# Time for preparing the cudaq Hamiltonian:", end - start)
 
-    return hamiltonian_cudaq, scf_data, my_casci.chkfile
+    return hamiltonian_cudaq, scf_data, my_casci.chkfile, jw_hamiltonian

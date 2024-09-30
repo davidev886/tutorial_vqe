@@ -24,7 +24,7 @@ num_vqe_layers = 1
 random_seed = 1
 
 n_qubits = 2 * num_active_orbitals
-hamiltonian, pyscf_data, chkfile = get_molecular_hamiltonian(geometry=geometry,
+hamiltonian, pyscf_data, chkfile, jw_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
                                                              basis=basis,
                                                              num_active_electrons=num_active_electrons,
                                                              num_active_orbitals=num_active_orbitals)
@@ -57,6 +57,14 @@ optimized_energy = result['energy_optimized']
 vqe_energies = result["callback_energies"]
 # Final state vector from VQE
 final_state_vector = result["state_vec"]
+
+from openfermion.linalg import get_sparse_operator
+
+hamiltonian_array = get_sparse_operator(jw_hamiltonian, n_qubits).toarray()
+
+energy_computed = final_state_vector.conj().T @ hamiltonian_array @ final_state_vector
+
+print("energy from openfermion", energy_computed)
 
 # AFQMC
 ####
