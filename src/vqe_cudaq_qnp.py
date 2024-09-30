@@ -396,22 +396,22 @@ def get_molecular_hamiltonian(
     n_elec = [(num_active_electrons + spin) // 2,
               (num_active_electrons - spin) // 2]
 
-    scf_data = {"mol": molecule,
-                "mo_occ": my_casci.mo_occ,
-                "hcore": hcore,
-                "X": X,
-                "mo_coeff": my_casci.mo_coeff,
-                "energy_core": energy_core,
-                "num_active_electrons": n_elec}
-
     mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
     jw_hamiltonian = jordan_wigner(mol_ham)
     if verbose:
         print("# Preparing the cudaq Hamiltonian")
     start = time.time()
-    hamiltonian_cudaq, energy_core = get_cudaq_hamiltonian(jw_hamiltonian)
+    hamiltonian_cudaq, energy_core_cudaq_ham = get_cudaq_hamiltonian(jw_hamiltonian)
     end = time.time()
     if verbose:
         print("# Time for preparing the cudaq Hamiltonian:", end - start)
+
+    scf_data = {"mol": molecule,
+                "mo_occ": my_casci.mo_occ,
+                "hcore": hcore,
+                "X": X,
+                "mo_coeff": my_casci.mo_coeff,
+                "energy_core_cudaq_ham": energy_core_cudaq_ham,
+                "num_active_electrons": n_elec}
 
     return hamiltonian_cudaq, scf_data
