@@ -1,7 +1,6 @@
 import numpy as np
 
-from ipie.utils.from_pyscf import (load_from_pyscf_chkfile,
-                                   generate_hamiltonian,
+from ipie.utils.from_pyscf import (generate_hamiltonian,
                                    copy_LPX_to_LXmn,
                                    generate_wavefunction_from_mo_coeff
                                    )
@@ -31,7 +30,6 @@ def get_coeff_wf(final_state_vector, n_active_electrons, thres=1e-6):
     """
     :param final_state_vector: State vector from a VQE simulation
     :param n_active_electrons: list with number of electrons in active space
-    :param spin: spin
     :param thres: Threshold for coefficients to keep from VQE wavefunction
     :returns: Input for ipie trial: coefficients, list of occupied alpha, list of occupied bets
     """
@@ -129,14 +127,30 @@ def gen_ipie_input_from_pyscf_chk(
         return ipie_ham, wfn
 
 
-# Generate the input Hamiltonian for ipie from the pyscf data
+def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
+    """
+    Generate the AFQMC Hamiltonian and trial wavefunction from given SCF data.
 
-def get_afqmc_data(scf_data, final_state_vector):
+    This function takes self-consistent field (SCF) data and a final state vector
+    to construct the AFQMC Hamiltonian and the associated trial wavefunction. The
+    process involves generating input for the Hamiltonian using the provided SCF data,
+    which includes the one-electron integrals and Cholesky vectors.
+
+    :param scf_data: A dictionary containing SCF data including molecular
+                     information and the number of active electrons.
+    :type scf_data: dict
+    :param final_state_vector: The final state vector to compute the wavefunction.
+    :type final_state_vector: numpy.ndarray
+    :param chol_cut: The threshold for perfoming the Cholesky decomposition of the two body integrals
+    :type chol_cut: float
+    :return: A tuple containing the AFQMC Hamiltonian and the trial wavefunction.
+    :rtype: tuple
+    """
+
     h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf_chk(scf_data,
                                                               mcscf=True,
-                                                              chol_cut=1e-5)
+                                                              chol_cut=chol_cut)
     molecule = scf_data["mol"]
-    spin = molecule.spin
     n_active_electrons = scf_data["num_active_electrons"]
 
     num_basis = cholesky_vectors.shape[1]
