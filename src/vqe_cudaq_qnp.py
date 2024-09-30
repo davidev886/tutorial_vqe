@@ -245,9 +245,7 @@ class VQE(object):
         # We add here the energy core
         callback_energies = [en + energy_core for en in callback_energies]
         end_t = time.time()
-        final_energy = cost(best_parameters)
-        print("# Final energy: ", final_energy + energy_core)
-        print("# Num Params:", self.num_params)
+        print("# Num params:", self.num_params)
         print("# Qubits:", self.n_qubits)
         print("# N_layers:", self.n_layers)
         print("# Energy after the VQE:", total_opt_energy)
