@@ -398,7 +398,7 @@ def get_molecular_hamiltonian(
 
     scf_data = {"mol": molecule,
                 "mo_occ": my_casci.mo_occ,
-                "hcore": h1,
+                "hcore": hcore,
                 "X": X,
                 "mo_coeff": my_casci.mo_coeff,
                 "energy_core": energy_core,
