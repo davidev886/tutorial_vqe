@@ -173,7 +173,7 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
         molecule.nelec,
         afqmc_hamiltonian.nbasis,
         num_dets_for_props=len(wavefunction[0]),
-        verbose=True)
+        verbose=False)
 
     trial_wavefunction.compute_trial_energy = True
     trial_wavefunction.build()
