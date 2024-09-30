@@ -153,14 +153,14 @@ def get_afqmc_data(scf_data, final_state_vector):
     wavefunction = get_coeff_wf(final_state_vector,
                                 n_active_electrons=n_active_electrons,
                                 )
-    print("here")
+
     trial_wavefunction = ParticleHole(
         wavefunction,
         molecule.nelec,
         afqmc_hamiltonian.nbasis,
         num_dets_for_props=len(wavefunction[0]),
         verbose=False)
-    print("here2")
+
     trial_wavefunction.compute_trial_energy = True
     trial_wavefunction.build()
     trial_wavefunction.half_rotate(afqmc_hamiltonian)
