@@ -1,6 +1,7 @@
 import numpy as np
 
-from ipie.utils.from_pyscf import (generate_hamiltonian,
+from ipie.utils.from_pyscf import (load_from_pyscf_chkfile,
+                                   generate_hamiltonian,
                                    copy_LPX_to_LXmn,
                                    generate_wavefunction_from_mo_coeff
                                    )
@@ -99,7 +100,7 @@ def get_coeff_wf_old(final_state_vector, n_active_electrons, thres=1e-6):
     return coeff, occas, occbs
 
 
-def gen_ipie_input_from_pyscf_chk(
+def gen_ipie_input_from_pyscf_chk_old(
         scf_data: dict,
         verbose: bool = True,
         chol_cut: float = 1e-5,
@@ -115,6 +116,71 @@ def gen_ipie_input_from_pyscf_chk(
     # else:
     #     scf_data = load_from_pyscf_chkfile(pyscf_chkfile)
 
+    mol = scf_data["mol"]
+    hcore = scf_data["hcore"]
+    ortho_ao_mat = scf_data["X"]
+    mo_coeffs = scf_data["mo_coeff"]
+    mo_occ = scf_data["mo_occ"]
+    if ortho_ao:
+        basis_change_matrix = ortho_ao_mat
+    else:
+        basis_change_matrix = mo_coeffs
+
+        if isinstance(mo_coeffs, list) or len(mo_coeffs.shape) == 3:
+            if verbose:
+                print(
+                    "# UHF mo coefficients found and ortho-ao == False. Using"
+                    " alpha mo coefficients for basis transformation."
+                )
+            basis_change_matrix = mo_coeffs[0]
+    ham = generate_hamiltonian(
+        mol,
+        mo_coeffs,
+        hcore,
+        basis_change_matrix,
+        chol_cut=chol_cut,
+        num_frozen_core=num_frozen_core,
+        verbose=False,
+    )
+    # write_hamiltonian(ham.H1[0], copy_LPX_to_LXmn(ham.chol), ham.ecore, filename=hamil_file)
+    ipie_ham = (ham.H1[0], copy_LPX_to_LXmn(ham.chol), ham.ecore)
+    nelec = (mol.nelec[0] - num_frozen_core, mol.nelec[1] - num_frozen_core)
+    if verbose:
+        print(f"# Number of electrons in simulation: {nelec}")
+    if mcscf:
+        # ci_coeffs = scf_data["ci_coeffs"]
+        # occa = scf_data["occa"]
+        # occb = scf_data["occb"]
+        # write_wavefunction((ci_coeffs, occa, occb), wfn_file)
+        return ipie_ham
+    else:
+        wfn = generate_wavefunction_from_mo_coeff(
+            mo_coeffs,
+            mo_occ,
+            basis_change_matrix,
+            nelec,
+            ortho_ao=ortho_ao,
+            num_frozen_core=num_frozen_core,
+        )
+        # write_wavefunction(wfn, wfn_file)
+        return ipie_ham, wfn
+
+
+def gen_ipie_input_from_pyscf_chk(
+        pyscf_chkfile: str,
+        verbose: bool = True,
+        chol_cut: float = 1e-5,
+        ortho_ao: bool = False,
+        mcscf: bool = False,
+        linear_dep_thresh: float = 1e-8,
+        num_frozen_core: int = 0):
+    """Generate AFQMC data from PYSCF (molecular) simulation.
+        Adapted from ipie.utils.from_pyscf: returns hamiltonian and wavefunction instead of writing on files
+    """
+    if mcscf:
+        scf_data = load_from_pyscf_chkfile(pyscf_chkfile, base="mcscf")
+    else:
+        scf_data = load_from_pyscf_chkfile(pyscf_chkfile)
     mol = scf_data["mol"]
     hcore = scf_data["hcore"]
     ortho_ao_mat = scf_data["X"]
