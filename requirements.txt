@@ -1,8 +1,9 @@
 h5py==3.11.0
 matplotlib==3.9.2
-numpy~=1.26.4
+numpy~=1.24.4
 openfermion==1.6.1
-pyscf==2.6.2
+pyscf~=2.5.0
 scipy~=1.14.1
 pandas~=2.2.2
 ipie @ git+https://github.com/yfhuang93/ipie.git
+natsort~=8.4.0
