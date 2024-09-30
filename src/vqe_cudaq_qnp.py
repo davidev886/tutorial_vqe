@@ -393,6 +393,16 @@ def get_molecular_hamiltonian(
     h2_no_symmetry = ao2mo.restore('1', h2, num_active_orbitals)
     tbi = np.asarray(h2_no_symmetry.transpose(0, 2, 3, 1), order='C')
 
+    mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
+    jw_hamiltonian = jordan_wigner(mol_ham)
+    if verbose:
+        print("# Preparing the cudaq Hamiltonian")
+    start = time.time()
+    hamiltonian_cudaq, energy_core = get_cudaq_hamiltonian(jw_hamiltonian)
+    end = time.time()
+    if verbose:
+        print("# Time for preparing the cudaq Hamiltonian:", end - start)
+
     n_elec = [(num_active_electrons + spin) // 2,
               (num_active_electrons - spin) // 2]
 
@@ -403,15 +413,5 @@ def get_molecular_hamiltonian(
                 "mo_coeff": my_casci.mo_coeff,
                 "energy_core": energy_core,
                 "num_active_electrons": n_elec}
-
-    mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
-    jw_hamiltonian = jordan_wigner(mol_ham)
-    if verbose:
-        print("# Preparing the cudaq Hamiltonian")
-    start = time.time()
-    hamiltonian_cudaq, energy_core = get_cudaq_hamiltonian(jw_hamiltonian)
-    end = time.time()
-    if verbose:
-        print("# Time for preparing the cudaq Hamiltonian:", end - start)
 
     return hamiltonian_cudaq, scf_data
