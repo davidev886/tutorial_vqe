@@ -26,7 +26,45 @@ def signature_permutation(orbital_list):
     return (-1) ** transposition_count
 
 
-def get_coeff_wf(final_state_vector, n_active_electrons, thres=1e-6):
+def get_coeff_wf(final_state_vector, n_active_elec, spin=0, thres=1e-6):
+    """
+    :param final_state_vector: State vector from a VQE simulation
+    :param n_active_elec: Number of total electrons in active space
+    :param spin: spin
+    :param thres: Threshold for coefficients to keep from VQE wavefunction
+    :returns: Input for ipie trial: coefficients, list of occupied alpha, list of occupied bets
+    """
+    n_qubits = int(np.log2(final_state_vector.size))
+    n_elec = [(n_active_elec + spin) // 2,
+              (n_active_elec - spin) // 2]
+
+    coeff = []
+    occas = []
+    occbs = []
+    for j, val in enumerate(final_state_vector):
+        if abs(val) > thres:
+            ket = np.binary_repr(j, width=n_qubits)
+            alpha_ket = ket[::2]
+            beta_ket = ket[1::2]
+            occ_alpha = np.where([int(_) for _ in alpha_ket])[0]
+            occ_beta = np.where([int(_) for _ in beta_ket])[0]
+            occ_orbitals = np.append(2 * occ_alpha, 2 * occ_beta + 1)
+
+            if (len(occ_alpha) == n_elec[0]) and (len(occ_beta) == n_elec[1]):
+                coeff.append(signature_permutation(occ_orbitals) * val)
+                occas.append(occ_alpha)
+                occbs.append(occ_beta)
+
+    coeff = np.array(coeff, dtype=complex)
+    ixs = np.argsort(np.abs(coeff))[::-1]
+    coeff = coeff[ixs]
+    occas = np.array(occas)[ixs]
+    occbs = np.array(occbs)[ixs]
+
+    return coeff, occas, occbs
+
+
+def get_coeff_wf_old(final_state_vector, n_active_electrons, thres=1e-6):
     """
     :param final_state_vector: State vector from a VQE simulation
     :param n_active_electrons: list with number of electrons in active space

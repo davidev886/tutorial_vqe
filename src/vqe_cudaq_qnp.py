@@ -374,6 +374,7 @@ def get_molecular_hamiltonian(
     )
     print('# Start Hartree-Fock computation')
     hartee_fock = scf.ROHF(molecule)
+    hartee_fock.chkfile = "output.chk"
     # Run Hartree-Fock
     hartee_fock.kernel()
 
@@ -386,6 +387,7 @@ def get_molecular_hamiltonian(
     my_casci.fix_spin_(ss=ss)
 
     print('# Start CAS computation')
+    my_casci.chkfile = "output.chk"
     e_tot, e_cas, fcivec, mo_output, mo_energy = my_casci.kernel()
 
     h1, energy_core = my_casci.get_h1eff()
@@ -414,4 +416,4 @@ def get_molecular_hamiltonian(
     if verbose:
         print("# Time for preparing the cudaq Hamiltonian:", end - start)
 
-    return hamiltonian_cudaq, scf_data
+    return hamiltonian_cudaq, scf_data, my_casci.chkfile
