@@ -381,12 +381,6 @@ def get_molecular_hamiltonian(
     s1e = molecule.intor("int1e_ovlp_sph")
     X = get_ortho_ao(s1e)
 
-    scf_data = {"mol": molecule,
-                "mo_occ": hartee_fock.mo_occ,
-                "hcore": hcore,
-                "X": X,
-                "mo_coeff": hartee_fock.mo_coeff}
-
     my_casci = mcscf.CASCI(hartee_fock, num_active_orbitals, num_active_electrons)
     ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
     my_casci.fix_spin_(ss=ss)
@@ -398,12 +392,17 @@ def get_molecular_hamiltonian(
     h2 = my_casci.get_h2eff()
     h2_no_symmetry = ao2mo.restore('1', h2, num_active_orbitals)
     tbi = np.asarray(h2_no_symmetry.transpose(0, 2, 3, 1), order='C')
-    scf_data["energy_core"] = energy_core
 
     n_elec = [(num_active_electrons + spin) // 2,
               (num_active_electrons - spin) // 2]
 
-    scf_data["num_active_electrons"] = n_elec
+    scf_data = {"mol": molecule,
+                "mo_occ": my_casci.mo_occ,
+                "hcore": h1,
+                "X": X,
+                "mo_coeff": my_casci.mo_coeff,
+                "energy_core": energy_core,
+                "num_active_electrons": n_elec}
 
     mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
     jw_hamiltonian = jordan_wigner(mol_ham)
