@@ -237,7 +237,9 @@ class VQE(object):
                                     initial_parameters,
                                     method=method_optimizer,
                                     options={'maxiter': maxiter})
-
+        print("--" * 20)
+        print(result_optimizer)
+        print("--" * 20)
         best_parameters = result_optimizer['x']
         energy_optimized = result_optimizer['fun']
 
@@ -246,7 +248,7 @@ class VQE(object):
         callback_energies = [en + energy_core for en in callback_energies]
         end_t = time.time()
         final_energy = cost(best_parameters)
-        print("# Final energy: ", final_energy + energy_core)
+        print("# Final energy: ", final_energy + energy_core, final_energy , energy_core)
         print("# Num Params:", self.num_params)
         print("# Qubits:", self.n_qubits)
         print("# N_layers:", self.n_layers)
@@ -374,6 +376,7 @@ def get_molecular_hamiltonian(
     )
     print('# Start Hartree-Fock computation')
     hartee_fock = scf.ROHF(molecule)
+    hartee_fock.chkfile = "output.chk"
     # Run Hartree-Fock
     hartee_fock.kernel()
 
@@ -386,6 +389,7 @@ def get_molecular_hamiltonian(
     my_casci.fix_spin_(ss=ss)
 
     print('# Start CAS computation')
+    my_casci.chkfile = "output.chk"
     e_tot, e_cas, fcivec, mo_output, mo_energy = my_casci.kernel()
 
     h1, energy_core = my_casci.get_h1eff()
@@ -406,12 +410,24 @@ def get_molecular_hamiltonian(
     n_elec = [(num_active_electrons + spin) // 2,
               (num_active_electrons - spin) // 2]
 
+    mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
+    jw_hamiltonian = jordan_wigner(mol_ham)
+    if verbose:
+        print("# Preparing the cudaq Hamiltonian")
+    start = time.time()
+    hamiltonian_cudaq, energy_core_cudaq_ham = get_cudaq_hamiltonian(jw_hamiltonian)
+    end = time.time()
+    if verbose:
+        print("# Time for preparing the cudaq Hamiltonian:", end - start)
+
     scf_data = {"mol": molecule,
                 "mo_occ": my_casci.mo_occ,
                 "hcore": hcore,
                 "X": X,
                 "mo_coeff": my_casci.mo_coeff,
                 "energy_core": energy_core,
+                "num_active_electrons": n_elec}
+                "energy_core_cudaq_ham": energy_core_cudaq_ham,
                 "num_active_electrons": n_elec}
 
     return hamiltonian_cudaq, scf_data
