@@ -237,7 +237,9 @@ class VQE(object):
                                     initial_parameters,
                                     method=method_optimizer,
                                     options={'maxiter': maxiter})
-
+        print("--" * 20)
+        print(result_optimizer)
+        print("--" * 20)
         best_parameters = result_optimizer['x']
         energy_optimized = result_optimizer['fun']
 
