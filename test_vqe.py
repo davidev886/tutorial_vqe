@@ -3,7 +3,7 @@ Contains the main file for running a complete VQE with cudaquantum  plus AFMQC w
 """
 
 import numpy as np
-from src.vqe_cudaq_qnp import get_molecular_hamiltonian
+from src.utils_ipie import get_molecular_hamiltonian
 from src.vqe_cudaq_qnp import VQE
 
 # AFQMC
@@ -25,10 +25,13 @@ num_vqe_layers = 1
 random_seed = 1
 
 n_qubits = 2 * num_active_orbitals
-hamiltonian, pyscf_data = get_molecular_hamiltonian(geometry=geometry,
-                                                    basis=basis,
-                                                    num_active_electrons=num_active_electrons,
-                                                    num_active_orbitals=num_active_orbitals)
+data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
+                                             basis=basis,
+                                             num_active_electrons=num_active_electrons,
+                                             num_active_orbitals=num_active_orbitals)
+
+hamiltonian = data_hamiltonian["hamiltonian"]
+pyscf_data = data_hamiltonian["scf_data"]
 
 MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
 
