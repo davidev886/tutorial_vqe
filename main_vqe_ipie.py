@@ -29,7 +29,9 @@ n_qubits = 2 * num_active_orbitals
 data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
                                              basis=basis,
                                              num_active_electrons=num_active_electrons,
-                                             num_active_orbitals=num_active_orbitals)
+                                             num_active_orbitals=num_active_orbitals,
+                                             create_cudaq_ham=True,
+                                             )
 
 hamiltonian = data_hamiltonian["hamiltonian"]
 pyscf_data = data_hamiltonian["scf_data"]
