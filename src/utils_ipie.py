@@ -96,6 +96,7 @@ def gen_ipie_input_from_pyscf(
                     " alpha mo coefficients for basis transformation."
                 )
             basis_change_matrix = mo_coeffs[0]
+    print(f"chol_cut={chol_cut},")
     ham = generate_hamiltonian(
         mol,
         mo_coeffs,
