@@ -3,7 +3,7 @@ Contains the main file for running a complete VQE with cudaquantum  plus AFMQC w
 """
 
 import numpy as np
-from src.vqe_cudaq_qnp import get_molecular_hamiltonian
+from src.utils_ipie import get_molecular_hamiltonian
 # from src.vqe_cudaq_qnp import VQE
 
 # AFQMC
