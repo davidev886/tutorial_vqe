@@ -65,7 +65,7 @@ def get_coeff_wf(final_state_vector, n_active_electrons, thres=1e-6):
     return coeff, occas, occbs
 
 
-def gen_ipie_input_from_pyscf_chk(
+def gen_ipie_input_from_pyscf(
         scf_data: dict,
         verbose: bool = True,
         chol_cut: float = 1e-5,
@@ -131,8 +131,8 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
     :rtype: tuple
     """
 
-    h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf_chk(scf_data,
-                                                              chol_cut=chol_cut)
+    h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf(scf_data,
+                                                          chol_cut=chol_cut)
     molecule = scf_data["mol"]
     n_active_electrons = scf_data["num_active_electrons"]
 
