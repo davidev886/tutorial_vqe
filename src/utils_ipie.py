@@ -12,7 +12,6 @@ from openfermion.transforms import jordan_wigner
 from openfermion import generate_hamiltonian
 from pyscf import gto, scf, ao2mo, mcscf
 from ipie.utils.from_pyscf import get_ortho_ao
-from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
 
 
 def signature_permutation(orbital_list):
@@ -173,6 +172,7 @@ def get_molecular_hamiltonian(
         basis="cc-pVDZ",
         spin=0,
         charge=0,
+        create_cudaq_ham=False,
         verbose=0):
     """
      Compute the molecular Hamiltonian for a given molecule using Hartree-Fock and CASCI methods.
@@ -183,6 +183,7 @@ def get_molecular_hamiltonian(
      :param str basis: Basis set to be used for the calculation. Default is 'cc-pVDZ'.
      :param int spin: Spin multiplicity of the molecule. Default is 0.
      :param int charge: Charge of the molecule. Default is 0.
+     :param bool create_cudaq_ham: True if cuda quantum hamiltonian should be computed
      :param int verbose: Verbosity level of the calculation. Default is 0.
 
      :returns:
@@ -221,22 +222,29 @@ def get_molecular_hamiltonian(
     n_elec = [(num_active_electrons + spin) // 2,
               (num_active_electrons - spin) // 2]
 
-    mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
-    jw_hamiltonian = jordan_wigner(mol_ham)
-    if verbose:
-        print("# Preparing the cudaq Hamiltonian")
-    start = time.time()
-    hamiltonian_cudaq, energy_core_cudaq_ham = get_cudaq_hamiltonian(jw_hamiltonian)
-    end = time.time()
-    if verbose:
-        print("# Time for preparing the cudaq Hamiltonian:", end - start)
-
     scf_data = {"mol": molecule,
                 "mo_occ": my_casci.mo_occ,
                 "hcore": hcore,
                 "X": X,
                 "mo_coeff": my_casci.mo_coeff,
-                "energy_core_cudaq_ham": energy_core_cudaq_ham,
                 "num_active_electrons": n_elec}
 
-    return hamiltonian_cudaq, scf_data
+    if create_cudaq_ham:
+        from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
+        mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
+        jw_hamiltonian = jordan_wigner(mol_ham)
+        if verbose:
+            print("# Preparing the cudaq Hamiltonian")
+        start = time.time()
+        hamiltonian_cudaq, energy_core_cudaq_ham = get_cudaq_hamiltonian(jw_hamiltonian)
+        end = time.time()
+        if verbose:
+            print("# Time for preparing the cudaq Hamiltonian:", end - start)
+
+        scf_data["energy_core_cudaq_ham"] = energy_core_cudaq_ham
+
+        data_hamiltonian = {"hamiltonian_cudaq": hamiltonian_cudaq, "scf_data": scf_data}
+    else:
+        data_hamiltonian = {"scf_data": scf_data}
+
+    return data_hamiltonian
