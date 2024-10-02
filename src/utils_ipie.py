@@ -1,8 +1,7 @@
 import numpy as np
 import time
-from ipie.utils.from_pyscf import (generate_hamiltonian,
-                                   copy_LPX_to_LXmn,
-                                   )
+from ipie.utils.from_pyscf import generate_hamiltonian as generate_afqmc_hamiltonian
+from ipie.utils.from_pyscf import copy_LPX_to_LXmn
 
 from ipie.hamiltonians.generic import Generic as HamGeneric
 from ipie.systems.generic import Generic
@@ -10,6 +9,7 @@ from ipie.trial_wavefunction.particle_hole import ParticleHole
 
 from openfermion.transforms import jordan_wigner
 from openfermion import generate_hamiltonian
+
 from pyscf import gto, scf, ao2mo, mcscf
 from ipie.utils.from_pyscf import get_ortho_ao
 
@@ -96,13 +96,13 @@ def gen_ipie_input_from_pyscf(
                     " alpha mo coefficients for basis transformation."
                 )
             basis_change_matrix = mo_coeffs[0]
-    print(f"chol_cut={chol_cut},")
-    ham = generate_hamiltonian(
+
+    ham = generate_afqmc_hamiltonian(
         mol,
         mo_coeffs,
         hcore,
         basis_change_matrix,
-        #chol_cut=chol_cut,
+        chol_cut=chol_cut,
         num_frozen_core=num_frozen_core,
         verbose=False,
     )
@@ -134,6 +134,7 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
 
     h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf(scf_data,
                                                           chol_cut=chol_cut)
+
     molecule = scf_data["mol"]
     n_active_electrons = scf_data["num_active_electrons"]
 
