@@ -244,7 +244,7 @@ def get_molecular_hamiltonian(
 
         scf_data["energy_core_cudaq_ham"] = energy_core_cudaq_ham
 
-        data_hamiltonian = {"hamiltonian_cudaq": hamiltonian_cudaq, "scf_data": scf_data}
+        data_hamiltonian = {"hamiltonian": hamiltonian_cudaq, "scf_data": scf_data}
     else:
         data_hamiltonian = {"scf_data": scf_data}
 
