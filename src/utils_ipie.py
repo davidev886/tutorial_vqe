@@ -1,13 +1,18 @@
 import numpy as np
-
+import time
 from ipie.utils.from_pyscf import (generate_hamiltonian,
                                    copy_LPX_to_LXmn,
-                                   generate_wavefunction_from_mo_coeff
                                    )
 
 from ipie.hamiltonians.generic import Generic as HamGeneric
 from ipie.systems.generic import Generic
 from ipie.trial_wavefunction.particle_hole import ParticleHole
+
+from openfermion.transforms import jordan_wigner
+from openfermion import generate_hamiltonian
+from pyscf import gto, scf, ao2mo, mcscf
+from ipie.utils.from_pyscf import get_ortho_ao
+from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
 
 
 def signature_permutation(orbital_list):
@@ -159,3 +164,79 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
     trial_wavefunction.half_rotate(afqmc_hamiltonian)
 
     return afqmc_hamiltonian, trial_wavefunction
+
+
+def get_molecular_hamiltonian(
+        geometry,
+        num_active_orbitals,
+        num_active_electrons,
+        basis="cc-pVDZ",
+        spin=0,
+        charge=0,
+        verbose=0):
+    """
+     Compute the molecular Hamiltonian for a given molecule using Hartree-Fock and CASCI methods.
+
+     :param str geometry: Atomic coordinates of the molecule in the format required by PySCF.
+     :param int num_active_orbitals: Number of active orbitals for the CASCI calculation.
+     :param int num_active_electrons: Number of active electrons for the CASCI calculation.
+     :param str basis: Basis set to be used for the calculation. Default is 'cc-pVDZ'.
+     :param int spin: Spin multiplicity of the molecule. Default is 0.
+     :param int charge: Charge of the molecule. Default is 0.
+     :param int verbose: Verbosity level of the calculation. Default is 0.
+
+     :returns:
+         - hamiltonian_cudaq (object): The Hamiltonian in the format required by CUDA Quantum (cudaq).
+         - energy_core (float): The core energy part of the Hamiltonian.
+     :rtype: tuple
+     """
+    molecule = gto.M(
+        atom=geometry,
+        spin=spin,
+        basis=basis,
+        charge=charge,
+        verbose=verbose
+    )
+    print('# Start Hartree-Fock computation')
+    hartee_fock = scf.ROHF(molecule)
+    # Run Hartree-Fock
+    hartee_fock.kernel()
+
+    hcore = scf.hf.get_hcore(molecule)
+    s1e = molecule.intor("int1e_ovlp_sph")
+    X = get_ortho_ao(s1e)
+
+    my_casci = mcscf.CASCI(hartee_fock, num_active_orbitals, num_active_electrons)
+    ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
+    my_casci.fix_spin_(ss=ss)
+
+    print('# Start CAS computation')
+    e_tot, e_cas, fcivec, mo_output, mo_energy = my_casci.kernel()
+
+    h1, energy_core = my_casci.get_h1eff()
+    h2 = my_casci.get_h2eff()
+    h2_no_symmetry = ao2mo.restore('1', h2, num_active_orbitals)
+    tbi = np.asarray(h2_no_symmetry.transpose(0, 2, 3, 1), order='C')
+
+    n_elec = [(num_active_electrons + spin) // 2,
+              (num_active_electrons - spin) // 2]
+
+    mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
+    jw_hamiltonian = jordan_wigner(mol_ham)
+    if verbose:
+        print("# Preparing the cudaq Hamiltonian")
+    start = time.time()
+    hamiltonian_cudaq, energy_core_cudaq_ham = get_cudaq_hamiltonian(jw_hamiltonian)
+    end = time.time()
+    if verbose:
+        print("# Time for preparing the cudaq Hamiltonian:", end - start)
+
+    scf_data = {"mol": molecule,
+                "mo_occ": my_casci.mo_occ,
+                "hcore": hcore,
+                "X": X,
+                "mo_coeff": my_casci.mo_coeff,
+                "energy_core_cudaq_ham": energy_core_cudaq_ham,
+                "num_active_electrons": n_elec}
+
+    return hamiltonian_cudaq, scf_data
