@@ -1,0 +1,101 @@
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.21692381614554
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.3878634462161
+# Time for VQE [min]: 0.3180792212486267
+ValueError: expected a 2-D array
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.21692381614568
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.3878634462161
+# Time for VQE [min]: 0.3220513065656026
+ValueError: expected a 2-D array
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.2169238161457
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.38786344621622
+# Time for VQE [min]: 0.312660018603007
+# random seed is 1
+ValueError: expected a 2-D array
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.21692381614582
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.38786344621636
+# Time for VQE [min]: 0.31890844901402793
+ValueError: expected a 2-D array
+srun: error: nid003597: task 0: Exited with exit code 1
+srun: Terminating StepId=31277891.0
+slurmstepd: error: *** STEP 31277891.0 ON nid003597 CANCELLED AT 2024-10-02T15:34:29 ***
+srun: error: nid003597: tasks 1-3: Exited with exit code 1
