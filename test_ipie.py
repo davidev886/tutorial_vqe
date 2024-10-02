@@ -91,8 +91,7 @@ qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
 # plt.plot(vqe_x, vqe_y, label="VQE")
 
 afqmc_y = list(qmc_data["ETotal"])
-afqmc_x = [i + vqe_x[-1] for i in list(range(len(afqmc_y)))]
-plt.plot(afqmc_x, afqmc_y, label="AFQMC")
+plt.plot(afqmc_y, label="AFQMC")
 
 plt.xlabel("Optimization steps")
 plt.ylabel("Energy [Ha]")

@@ -51,7 +51,12 @@ srun --mpi=pmix shifter bash -l launch.sh test_vqe.py
 
 ```
 salloc --qos=interactive -C cpu --time=00:30:00 --nodes=1 -N 1 -A m4465 --image=docker:nvcr.io/nvidia/nightly/cuda-quantum:latest
+
 export LD_LIBRARY_PATH=$HOME:$LD_LIBRARY_PATH
 export CUDAQ_MPI_COMM_LIB=${HOME}/distributed_interfaces/libcudaq_distributed_interface_mpi.so
-srun --mpi=pmix shifter bash -l launch.sh main_vqe_ipie.py 
+srun --mpi=pmix shifter bash -l launch.sh test_ipie.py
+```
+or
+```
+shifter python test_ipie.py 
 ```
