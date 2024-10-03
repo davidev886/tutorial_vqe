@@ -39,15 +39,13 @@ srun --mpi=pmix shifter bash -l launch.sh test_vqe.py
 
 ```
 salloc -N 1 --gpus-per-task=4 --ntasks-per-node=1 -t 30 --qos=interactive -A m4465 -C gpu
-```
-(change ``config.update_option("use_gpu", True)``)
-```
+
 module load python
 conda activate gpu-ipie
  
 export LD_LIBRARY_PATH=$HOME:$LD_LIBRARY_PATH
 export CUDAQ_MPI_COMM_LIB=${HOME}/distributed_interfaces/libcudaq_distributed_interface_mpi.so
-python -u test_ipie.py
+IPIE_USE_GPU=1 srun --mpi=pmix shifter bash -l launch.sh test_ipie.py 
 (tested)
 ```
 
