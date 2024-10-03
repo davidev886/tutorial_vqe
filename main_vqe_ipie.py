@@ -5,14 +5,9 @@ Contains the main file for running a complete VQE with cudaquantum  plus AFMQC w
 import numpy as np
 from src.utils_ipie import get_molecular_hamiltonian
 from src.vqe_cudaq_qnp import VQE
-from ipie.config import config
 from ipie.qmc.afqmc import AFQMC
 from ipie.analysis.extraction import extract_observable
 from src.utils_ipie import get_afqmc_data
-import matplotlib.pyplot as plt
-
-config.update_option("use_gpu", True)
-
 
 num_active_orbitals = 5
 num_active_electrons = 8
@@ -85,6 +80,8 @@ afqmc_msd.finalise(verbose=False)
 
 # Extract the energies
 qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
+
+import matplotlib.pyplot as plt
 
 vqe_y = vqe_energies
 vqe_x = list(range(len(vqe_y)))
