@@ -7,9 +7,6 @@ from ipie.hamiltonians.generic import Generic as HamGeneric
 from ipie.systems.generic import Generic
 from ipie.trial_wavefunction.particle_hole import ParticleHole
 
-from openfermion.transforms import jordan_wigner
-from openfermion import generate_hamiltonian
-
 from pyscf import gto, scf, ao2mo, mcscf
 from ipie.utils.from_pyscf import get_ortho_ao
 
@@ -233,6 +230,9 @@ def get_molecular_hamiltonian(
 
     if create_cudaq_ham:
         from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
+        from openfermion.transforms import jordan_wigner
+        from openfermion import generate_hamiltonian
+
         mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
         jw_hamiltonian = jordan_wigner(mol_ham)
         if verbose:
