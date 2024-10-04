@@ -1,24 +1,6 @@
 """
 Contains the main file for running a complete VQE with cudaquantum  plus AFMQC with ipie
 """
-import os
-
-os.environ['LD_LIBRARY_PATH'] = ("/usr/local/cuda-12.2/compat:/opt/nvidia/hpc_sdk/Linux_x86_64/23.9/math_libs/12.2"
-                                 "/lib64:/opt/nvidia/hpc_sdk/Linux_x86_64/23.9/cuda/12.2/extras/CUPTI/lib64:/opt"
-                                 "/nvidia/hpc_sdk/Linux_x86_64/23.9/cuda/12.2/extras/Debugger/lib64:/opt/nvidia"
-                                 "/hpc_sdk/Linux_x86_64/23.9/cuda/12.2/nvvm/lib64:/opt/nvidia/hpc_sdk/Linux_x86_64/23"
-                                 ".9/cuda/12.2/lib64:/opt/cray/pe/papi/7.0.1.2/lib64:/opt/cray/libfabric/1.15.2.0"
-                                 "/lib64:/opt/cray/libfabric/1.15.2.0/lib64")
-
-os.environ['CUDA_HOME'] = "/opt/nvidia/hpc_sdk/Linux_x86_64/23.9/cuda/12.2"
-os.environ['NUMBAPRO_NVVM'] = "$CUDA_HOME/nvvm/lib64/libnvvm.so"
-os.environ["NUMBAPRO_LIBDEVICE"] = "$CUDA_HOME/nvvm/libdevice"
-
-
-print(os.environ['LD_LIBRARY_PATH'])
-print()
-print("CUDA_HOME", os.environ['CUDA_HOME'])
-
 import numpy as np
 from src.utils_ipie import get_molecular_hamiltonian
 from src.vqe_cudaq_qnp import VQE
