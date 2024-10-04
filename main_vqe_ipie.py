@@ -13,9 +13,10 @@ os.environ['LD_LIBRARY_PATH'] = ("/usr/local/cuda-12.2/compat:/opt/nvidia/hpc_sd
 os.environ['NUMBAPRO_NVVM'] = "$CUDA_HOME/nvvm/lib64/libnvvm.so"
 os.environ["NUMBAPRO_LIBDEVICE"] = "$CUDA_HOME/nvvm/libdevice"
 
+
 print(os.environ['LD_LIBRARY_PATH'])
 print()
-print(os.environ['IPIE_USE_GPU'])
+print("CUDA_HOME", os.environ['$CUDA_HOME'])
 
 import numpy as np
 from src.utils_ipie import get_molecular_hamiltonian
