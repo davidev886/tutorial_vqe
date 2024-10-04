@@ -5,5 +5,5 @@ openfermion==1.6.1
 pyscf~=2.5.0
 scipy~=1.14.1
 pandas~=2.2.2
-ipie @ git+https://github.com/yfhuang93/ipie.git
+ipie @ git+https://github.com/yfhuang93/ipie@msd_gpu
 natsort~=8.4.0
