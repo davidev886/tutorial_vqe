@@ -1,6 +1,10 @@
 """
 Contains the main file for running a complete VQE with cudaquantum  plus AFMQC with ipie
 """
+import os
+print(os.environ['LD_LIBRARY_PATH'])
+print()
+print(os.environ['IPIE_USE_GPU'])
 
 import numpy as np
 from src.utils_ipie import get_molecular_hamiltonian
