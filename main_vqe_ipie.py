@@ -16,7 +16,7 @@ os.environ["NUMBAPRO_LIBDEVICE"] = "$CUDA_HOME/nvvm/libdevice"
 
 print(os.environ['LD_LIBRARY_PATH'])
 print()
-print("CUDA_HOME", os.environ['$CUDA_HOME'])
+print("CUDA_HOME", os.environ['CUDA_HOME'])
 
 import numpy as np
 from src.utils_ipie import get_molecular_hamiltonian
