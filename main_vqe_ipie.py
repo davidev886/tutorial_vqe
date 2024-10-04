@@ -10,6 +10,7 @@ os.environ['LD_LIBRARY_PATH'] = ("/usr/local/cuda-12.2/compat:/opt/nvidia/hpc_sd
                                  ".9/cuda/12.2/lib64:/opt/cray/pe/papi/7.0.1.2/lib64:/opt/cray/libfabric/1.15.2.0"
                                  "/lib64:/opt/cray/libfabric/1.15.2.0/lib64")
 
+os.environ['$CUDA_HOME'] = "/opt/nvidia/hpc_sdk/Linux_x86_64/23.9/cuda/12.2"
 os.environ['NUMBAPRO_NVVM'] = "$CUDA_HOME/nvvm/lib64/libnvvm.so"
 os.environ["NUMBAPRO_LIBDEVICE"] = "$CUDA_HOME/nvvm/libdevice"
 
