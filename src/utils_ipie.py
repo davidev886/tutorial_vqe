@@ -4,7 +4,6 @@ from ipie.utils.from_pyscf import generate_hamiltonian as generate_afqmc_hamilto
 from ipie.utils.from_pyscf import copy_LPX_to_LXmn
 
 from ipie.hamiltonians.generic import Generic as HamGeneric
-from ipie.systems.generic import Generic
 from ipie.trial_wavefunction.particle_hole import ParticleHole
 
 from pyscf import gto, scf, ao2mo, mcscf
@@ -69,18 +68,30 @@ def gen_ipie_input_from_pyscf(
         ortho_ao: bool = False,
         num_frozen_core: int = 0):
     """Generate AFQMC data from PYSCF (molecular) MCSCF simulation.
-        Adapted from ipie.utils.from_pyscf: returns hamiltonian instead of writing on files
+
+    Adapted from ipie.utils.from_pyscf: returns Hamiltonian instead of writing to files.
+
+    :param scf_data: Dictionary containing SCF data from PYSCF.
+    :type scf_data: dict
+    :param verbose: Flag to control verbosity of the output.
+    :type verbose: bool, optional
+    :param chol_cut: Cholesky decomposition cutoff.
+    :type chol_cut: float, optional
+    :param ortho_ao: Flag to use orthogonal atomic orbitals.
+    :type ortho_ao: bool, optional
+    :param num_frozen_core: Number of frozen core orbitals.
+    :type num_frozen_core: int, optional
+
+    :return: Tuple containing the Hamiltonian components.
+    :rtype: tuple
+
     """
-    # if mcscf:
-    #     scf_data = load_from_pyscf_chkfile(pyscf_chkfile, base="mcscf")
-    # else:
-    #     scf_data = load_from_pyscf_chkfile(pyscf_chkfile)
 
     mol = scf_data["mol"]
     hcore = scf_data["hcore"]
     ortho_ao_mat = scf_data["X"]
     mo_coeffs = scf_data["mo_coeff"]
-    mo_occ = scf_data["mo_occ"]
+
     if ortho_ao:
         basis_change_matrix = ortho_ao_mat
     else:
@@ -103,7 +114,6 @@ def gen_ipie_input_from_pyscf(
         num_frozen_core=num_frozen_core,
         verbose=False,
     )
-    # write_hamiltonian(ham.H1[0], copy_LPX_to_LXmn(ham.chol), ham.ecore, filename=hamil_file)
     ipie_ham = (ham.H1[0], copy_LPX_to_LXmn(ham.chol), ham.ecore)
 
     return ipie_ham
@@ -138,8 +148,6 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
     num_basis = cholesky_vectors.shape[1]
     num_chol = cholesky_vectors.shape[0]
 
-    system = Generic(nelec=molecule.nelec)
-
     afqmc_hamiltonian = HamGeneric(
         np.array([h1e, h1e]),
         cholesky_vectors.transpose((1, 2, 0)).reshape((num_basis * num_basis, num_chol)),
@@ -172,7 +180,7 @@ def get_molecular_hamiltonian(
         spin=0,
         charge=0,
         create_cudaq_ham=False,
-        verbose=0):
+        verbose=0) -> dict:
     """
      Compute the molecular Hamiltonian for a given molecule using Hartree-Fock and CASCI methods.
 
@@ -185,10 +193,9 @@ def get_molecular_hamiltonian(
      :param bool create_cudaq_ham: True if cuda quantum hamiltonian should be computed
      :param int verbose: Verbosity level of the calculation. Default is 0.
 
-     :returns:
-         - hamiltonian_cudaq (object): The Hamiltonian in the format required by CUDA Quantum (cudaq).
-         - energy_core (float): The core energy part of the Hamiltonian.
-     :rtype: tuple
+    :return: A dictionary containing the SCF data and optionally the CUDA quantum Hamiltonian.
+    :rtype: dict
+
      """
     molecule = gto.M(
         atom=geometry,
