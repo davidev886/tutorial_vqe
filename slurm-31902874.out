@@ -1,0 +1,48 @@
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+/opt/udiImage/modules/cuda-mpich/lib64:/opt/udiImage/modules/cuda-mpich/lib64/dep:/opt/nvidia/cutensor/lib:/opt/nvidia/cuquantum/lib:/usr/local/pmix/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/lib:/usr/local/ucx/lib:/usr/local/openmpi/lib:/opt/nvidia/cudaq/lib
+/opt/udiImage/modules/cuda-mpich/lib64:/opt/udiImage/modules/cuda-mpich/lib64/dep:/opt/nvidia/cutensor/lib:/opt/nvidia/cuquantum/lib:/usr/local/pmix/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/lib:/usr/local/ucx/lib:/usr/local/openmpi/lib:/opt/nvidia/cudaq/lib
+/opt/udiImage/modules/cuda-mpich/lib64:/opt/udiImage/modules/cuda-mpich/lib64/dep:/opt/nvidia/cutensor/lib:/opt/nvidia/cuquantum/lib:/usr/local/pmix/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/lib:/usr/local/ucx/lib:/usr/local/openmpi/lib:/opt/nvidia/cudaq/lib
+/opt/udiImage/modules/cuda-mpich/lib64:/opt/udiImage/modules/cuda-mpich/lib64/dep:/opt/nvidia/cutensor/lib:/opt/nvidia/cuquantum/lib:/usr/local/pmix/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/lib:/usr/local/ucx/lib:/usr/local/openmpi/lib:/opt/nvidia/cudaq/lib

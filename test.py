@@ -25,88 +25,90 @@ random_seed = 1
 
 n_qubits = 2 * num_active_orbitals
 
-# data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
-#                                              basis=basis,
-#                                              num_active_electrons=num_active_electrons,
-#                                              num_active_orbitals=num_active_orbitals,
-#                                              create_cudaq_ham=True,
-#                                              )
+data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
+                                             basis=basis,
+                                             num_active_electrons=num_active_electrons,
+                                             num_active_orbitals=num_active_orbitals,
+                                             create_cudaq_ham=True,
+                                             )
 
-# hamiltonian = data_hamiltonian["hamiltonian"]
-# pyscf_data = data_hamiltonian["scf_data"]
+hamiltonian = data_hamiltonian["hamiltonian"]
+pyscf_data = data_hamiltonian["scf_data"]
 
-# MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
+MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
 
-# optimizer_type = 'Nelder-Mead'
-# np.random.seed(random_seed)
-# print(f"# {optimizer_type}, {num_vqe_layers}")
+optimizer_type = 'Nelder-Mead'
+np.random.seed(random_seed)
+print(f"# {optimizer_type}, {num_vqe_layers}")
 
-# options = {'n_vqe_layers': num_vqe_layers,
-#            'maxiter': 100,
-#            'energy_core': pyscf_data["energy_core_cudaq_ham"],
-#            'return_final_state_vec': True,
-#            'optimizer': optimizer_type,
-#            'target': 'nvidia',
-#            'target_option': 'mqpu'}
+options = {'n_vqe_layers': num_vqe_layers,
+           'maxiter': 100,
+           'energy_core': pyscf_data["energy_core_cudaq_ham"],
+           'return_final_state_vec': True,
+           'optimizer': optimizer_type,
+           'target': 'nvidia',
+           'target_option': 'mqpu'}
 
-# vqe = VQE(n_qubits=n_qubits,
-#           num_active_electrons=num_active_electrons,
-#           spin=spin,
-#           options=options)
+vqe = VQE(n_qubits=n_qubits,
+          num_active_electrons=num_active_electrons,
+          spin=spin,
+          options=options)
 
-# vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
+vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
 
-# result = vqe.execute(hamiltonian)
+result = vqe.execute(hamiltonian)
 
-# # Best energy from VQE
-# optimized_energy = result['energy_optimized']
-# vqe_energies = result["callback_energies"]
-# # Final state vector from VQE
-# final_state_vector = result["state_vec"]
+# Best energy from VQE
+optimized_energy = result['energy_optimized']
+vqe_energies = result["callback_energies"]
+# Final state vector from VQE
+final_state_vector = result["state_vec"]
 
-# # %%
-# afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data, final_state_vector)
+# %%
+afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data, final_state_vector)
 
-# # Setup the AFQMC parameters
-# afqmc_msd = AFQMC.build(
-#     pyscf_data["mol"].nelec,
-#     afqmc_hamiltonian,
-#     trial_wavefunction,
-#     num_walkers=100,
-#     num_steps_per_block=25,
-#     num_blocks=10,
-#     timestep=0.005,
-#     stabilize_freq=5,
-#     seed=random_seed,
-#     pop_control_freq=5,
-#     verbose=False)
+# Setup the AFQMC parameters
+afqmc_msd = AFQMC.build(
+    pyscf_data["mol"].nelec,
+    afqmc_hamiltonian,
+    trial_wavefunction,
+    num_walkers=100,
+    num_steps_per_block=25,
+    num_blocks=10,
+    timestep=0.005,
+    stabilize_freq=5,
+    seed=random_seed,
+    pop_control_freq=5,
+    verbose=False)
 
-# # Run the AFQMC
-
-
-# # %%
-# afqmc_msd.run()
+# Run the AFQMC
 
 
-# # %%
-# afqmc_msd.finalise(verbose=False)
-
-# # Extract the energies
-# qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
+# %%
+afqmc_msd.run()
 
 
-# vqe_y = vqe_energies
-# vqe_x = list(range(len(vqe_y)))
-# plt.plot(vqe_x, vqe_y, label="VQE")
+# %%
+afqmc_msd.finalise(verbose=False)
 
-# afqmc_y = list(qmc_data["ETotal"])
-# afqmc_x = [i + vqe_x[-1] for i in list(range(len(afqmc_y)))]
-# plt.plot(afqmc_x, afqmc_y, label="AFQMC")
+# Extract the energies
+qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
 
-# plt.xlabel("Optimization steps")
-# plt.ylabel("Energy [Ha]")
-# plt.legend()
 
-# plt.savefig('vqe_afqmc_plot.png')
+vqe_y = vqe_energies
+vqe_x = list(range(len(vqe_y)))
+plt.plot(vqe_x, vqe_y, label="VQE")
 
+afqmc_y = list(qmc_data["ETotal"])
+afqmc_x = [i + vqe_x[-1] for i in list(range(len(afqmc_y)))]
+plt.plot(afqmc_x, afqmc_y, label="AFQMC")
+
+plt.xlabel("Optimization steps")
+plt.ylabel("Energy [Ha]")
+plt.legend()
+
+print(1)
+plt.savefig('vqe_afqmc_plot.png')
+
+print(2)
 

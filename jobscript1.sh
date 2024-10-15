@@ -7,7 +7,7 @@
 #SBATCH -q debug
 #SBATCH -A m4642
 #SBATCH -C gpu
-#SBATCH --image=docker:nvcr.io/nvidia/nightly/cuda-quantum:latest
+#SBATCH --image=zchandani731/nv_basf:v2
 #SBATCH --module=cuda-mpich
 
 export CUDAQ_MPI_COMM_LIB=${HOME}/distributed_interfaces/libcudaq_distributed_interface_mpi.so

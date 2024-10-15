@@ -1,0 +1,56 @@
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.2169238161458
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.38786344621624
+# Time for VQE [min]: 0.31496115525563556
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.2169238161457
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.38786344621622
+# Time for VQE [min]: 0.3137950579325358
+TypeError: Argument 'b' has incorrect type (expected cupy._core.core._ndarray_base, got numpy.ndarray)
+TypeError: Argument 'b' has incorrect type (expected cupy._core.core._ndarray_base, got numpy.ndarray)
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.21692381614588
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.3878644791829
+# Time for VQE [min]: 0.31070252259572345
+TypeError: Argument 'b' has incorrect type (expected cupy._core.core._ndarray_base, got numpy.ndarray)
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.21692381614548
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.38786447918258
+# Time for VQE [min]: 0.314724063873291
+TypeError: Argument 'b' has incorrect type (expected cupy._core.core._ndarray_base, got numpy.ndarray)
+srun: error: nid001269: tasks 0-1: Exited with exit code 1
+srun: Terminating StepId=31902950.0
+slurmstepd: error: *** STEP 31902950.0 ON nid001269 CANCELLED AT 2024-10-15T16:05:48 ***
+srun: error: nid001269: tasks 2-3: Exited with exit code 1
