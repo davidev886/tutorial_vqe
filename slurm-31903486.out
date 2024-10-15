@@ -1,0 +1,106 @@
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+=========================
+      NVIDIA CUDA-Q      
+=========================
+
+Version: latest
+
+Copyright (c) 2024 NVIDIA Corporation & Affiliates 
+All rights reserved.
+
+To run a command as administrator (user `root`), use `sudo <command>`.
+
+/opt/udiImage/modules/cuda-mpich/lib64:/opt/udiImage/modules/cuda-mpich/lib64/dep:/opt/nvidia/cutensor/lib:/opt/nvidia/cuquantum/lib:/usr/local/pmix/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/lib:/usr/local/ucx/lib:/usr/local/openmpi/lib:/opt/nvidia/cudaq/lib
+/opt/udiImage/modules/cuda-mpich/lib64:/opt/udiImage/modules/cuda-mpich/lib64/dep:/opt/nvidia/cutensor/lib:/opt/nvidia/cuquantum/lib:/usr/local/pmix/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/lib:/usr/local/ucx/lib:/usr/local/openmpi/lib:/opt/nvidia/cudaq/lib
+/opt/udiImage/modules/cuda-mpich/lib64:/opt/udiImage/modules/cuda-mpich/lib64/dep:/opt/nvidia/cutensor/lib:/opt/nvidia/cuquantum/lib:/usr/local/pmix/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/lib:/usr/local/ucx/lib:/usr/local/openmpi/lib:/opt/nvidia/cudaq/lib
+/opt/udiImage/modules/cuda-mpich/lib64:/opt/udiImage/modules/cuda-mpich/lib64/dep:/opt/nvidia/cutensor/lib:/opt/nvidia/cuquantum/lib:/usr/local/pmix/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/lib:/usr/local/ucx/lib:/usr/local/openmpi/lib:/opt/nvidia/cudaq/lib
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.21692381614565
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.3878644791827
+# Time for VQE [min]: 0.3190204461415609
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.2169238161457
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.38786344621624
+# Time for VQE [min]: 0.31899868647257484
+TypeError: Argument 'b' has incorrect type (expected cupy._core.core._ndarray_base, got numpy.ndarray)
+TypeError: Argument 'b' has incorrect type (expected cupy._core.core._ndarray_base, got numpy.ndarray)
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.21692381614565
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.38786447918275
+# Time for VQE [min]: 0.31741325855255126
+TypeError: Argument 'b' has incorrect type (expected cupy._core.core._ndarray_base, got numpy.ndarray)
+# Start Hartree-Fock computation
+# Start CAS computation
+# Nelder-Mead, 1
+# Set target nvidia with options mqpu
+# num gpus= 4
+# Initial energy:  -221.21692381614565
+# Start VQE minimization
+# Num params: 8
+# Qubits: 10
+# N_layers: 1
+# Energy after the VQE: -221.38786344621604
+# Time for VQE [min]: 0.3172062635421753
+TypeError: Argument 'b' has incorrect type (expected cupy._core.core._ndarray_base, got numpy.ndarray)
+srun: error: nid001313: task 0: Exited with exit code 1
+srun: Terminating StepId=31903486.0
+slurmstepd: error: *** STEP 31903486.0 ON nid001313 CANCELLED AT 2024-10-15T16:33:22 ***
+srun: error: nid001313: task 1: Terminated
+srun: error: nid001313: tasks 2-3: Exited with exit code 1
+srun: Force Terminated StepId=31903486.0

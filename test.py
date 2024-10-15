@@ -81,10 +81,7 @@ afqmc_msd = AFQMC.build(
     pop_control_freq=5,
     verbose=False)
 
-# Run the AFQMC
 
-
-# %%
 afqmc_msd.run()
 
 
