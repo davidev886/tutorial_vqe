@@ -1,13 +1,7 @@
 import numpy as np
 import time
-from ipie.utils.from_pyscf import generate_hamiltonian as generate_afqmc_hamiltonian
-from ipie.utils.from_pyscf import copy_LPX_to_LXmn
-
-from ipie.hamiltonians.generic import Generic as HamGeneric
-from ipie.trial_wavefunction.particle_hole import ParticleHole
 
 from pyscf import gto, scf, ao2mo, mcscf
-from ipie.utils.from_pyscf import get_ortho_ao
 
 
 def signature_permutation(orbital_list):
@@ -87,6 +81,9 @@ def gen_ipie_input_from_pyscf(
 
     """
 
+    from ipie.utils.from_pyscf import generate_hamiltonian as generate_afqmc_hamiltonian
+    from ipie.utils.from_pyscf import copy_LPX_to_LXmn
+
     mol = scf_data["mol"]
     hcore = scf_data["hcore"]
     ortho_ao_mat = scf_data["X"]
@@ -138,6 +135,9 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
     :return: A tuple containing the AFQMC Hamiltonian and the trial wavefunction.
     :rtype: tuple
     """
+    from ipie.hamiltonians.generic import Generic as HamGeneric
+    from ipie.trial_wavefunction.particle_hole import ParticleHole
+
 
     h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf(scf_data,
                                                           chol_cut=chol_cut)
@@ -257,3 +257,27 @@ def get_molecular_hamiltonian(
         data_hamiltonian = {"scf_data": scf_data}
 
     return data_hamiltonian
+
+
+def get_ortho_ao(S, LINDEP_CUTOFF=0):
+    """Generate canonical orthogonalization transformation matrix.
+
+    Parameters
+    ----------
+    S : :class:`np.ndarray`
+        Overlap matrix.
+    LINDEP_CUTOFF : float
+        Linear dependency cutoff. Basis functions whose eigenvalues lie below
+        this value are removed from the basis set. Should be set in accordance
+        with value in pyscf (pyscf.scf.addons.remove_linear_dep_).
+
+    Returns
+    -------
+    X : :class:`np.array`
+        Transformation matrix.
+
+    from ipie for avoiding conflicting imports
+    """
+    sdiag, Us = np.linalg.eigh(S)
+    X = Us[:, sdiag > LINDEP_CUTOFF] / np.sqrt(sdiag[sdiag > LINDEP_CUTOFF])
+    return X
