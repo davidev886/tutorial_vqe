@@ -218,12 +218,23 @@ def get_molecular_hamiltonian(
     X = get_ortho_ao(s1e)
 
     my_casci = mcscf.CASCI(hartee_fock, num_active_orbitals, num_active_electrons)
-    ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
-    my_casci.fix_spin_(ss=ss)
+    if num_active_orbitals > 12:
+        from pyscf import dmrgscf
+        from pyscf import lib
+        dmrg_states = 500
+        my_casci.fcisolver = dmrgscf.DMRGCI(molecule, maxM=dmrg_states, tol=1E-10)
+        my_casci.fcisolver.runtimeDir = os.path.abspath(lib.param.TMPDIR)
+        my_casci.fcisolver.scratchDirectory = os.path.abspath(lib.param.TMPDIR)
+        my_casci.fcisolver.threads = 8
+        my_casci.fcisolver.memory = int(molecule.max_memory / 1000)  # mem in GB
+        my_casci.fcisolver.conv_tol = 1e-14
+    else:
+        ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
+        my_casci.fix_spin_(ss=ss)
 
     print('# Start CAS computation')
     e_tot, e_cas, fcivec, mo_output, mo_energy = my_casci.kernel()
-
+    print('# Energy CAS', e_tot)
     h1, energy_core = my_casci.get_h1eff()
     h2 = my_casci.get_h2eff()
     h2_no_symmetry = ao2mo.restore('1', h2, num_active_orbitals)
@@ -237,7 +248,8 @@ def get_molecular_hamiltonian(
                 "hcore": hcore,
                 "X": X,
                 "mo_coeff": my_casci.mo_coeff,
-                "num_active_electrons": n_elec}
+                "num_active_electrons": n_elec,
+                "e_cas": e_tot}
 
     if create_cudaq_ham:
         from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
