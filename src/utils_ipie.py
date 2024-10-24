@@ -222,14 +222,17 @@ def get_molecular_hamiltonian(
         from pyscf import dmrgscf
         from pyscf import lib
         dmrg_states = 500
-        if verbose:
-            print("using dmrg pyscf with {dmrg_states} states")
+
         my_casci.fcisolver = dmrgscf.DMRGCI(molecule, maxM=dmrg_states, tol=1E-10)
         my_casci.fcisolver.runtimeDir = os.path.abspath(lib.param.TMPDIR)
         my_casci.fcisolver.scratchDirectory = os.path.abspath(lib.param.TMPDIR)
         my_casci.fcisolver.threads = 8
         my_casci.fcisolver.memory = int(molecule.max_memory / 1000)  # mem in GB
         my_casci.fcisolver.conv_tol = 1e-14
+        if verbose:
+            print(f"# using dmrg pyscf with {dmrg_states} states")
+            print(f"# using dmrg pyscf in {my_casci.fcisolver.runtimeDir} runtimeDir")
+            print(f"# using dmrg pyscf in {my_casci.fcisolver.scratchDirectory} scratchDirectory")
     else:
         ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
         my_casci.fix_spin_(ss=ss)
