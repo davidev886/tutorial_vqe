@@ -259,6 +259,7 @@ def get_molecular_hamiltonian(
         end = time.time()
         if verbose:
             print("# Time for preparing the cudaq Hamiltonian:", end - start)
+            print('Total number of terms in the spin hamiltonian = ', hamiltonian_cudaq.get_term_count())
 
         scf_data["energy_core_cudaq_ham"] = energy_core_cudaq_ham
 
