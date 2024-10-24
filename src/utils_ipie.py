@@ -1,7 +1,8 @@
 import numpy as np
 import time
-
+import os
 from pyscf import gto, scf, ao2mo, mcscf
+import pickle
 
 
 def signature_permutation(orbital_list):
@@ -138,7 +139,6 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
     from ipie.hamiltonians.generic import Generic as HamGeneric
     from ipie.trial_wavefunction.particle_hole import ParticleHole
 
-
     h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf(scf_data,
                                                           chol_cut=chol_cut)
 
@@ -180,7 +180,9 @@ def get_molecular_hamiltonian(
         spin=0,
         charge=0,
         create_cudaq_ham=False,
-        verbose=0) -> dict:
+        verbose=0,
+        label_molecule="molecule",
+        dir_save_hamiltonian="./") -> dict:
     """
      Compute the molecular Hamiltonian for a given molecule using Hartree-Fock and CASCI methods.
 
@@ -192,6 +194,8 @@ def get_molecular_hamiltonian(
      :param int charge: Charge of the molecule. Default is 0.
      :param bool create_cudaq_ham: True if cuda quantum hamiltonian should be computed
      :param int verbose: Verbosity level of the calculation. Default is 0.
+     :param str label_molecule: optional label for saving the hamiltonian file
+     :param str dir_save_hamiltonian: optional directory name for saving the hamiltonian file
 
     :return: A dictionary containing the SCF data and optionally the CUDA quantum Hamiltonian.
     :rtype: dict
@@ -242,6 +246,12 @@ def get_molecular_hamiltonian(
 
         mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
         jw_hamiltonian = jordan_wigner(mol_ham)
+        hamiltonian_fname = (f"ham_{label_molecule}_{basis.lower()}_"
+                             f"{num_active_electrons}e_{num_active_orbitals}o.pickle")
+        with open(os.path.join(dir_save_hamiltonian, hamiltonian_fname), 'wb') as filehandler:
+            print(f"# saving hamiltonian pickle in {os.path.join(dir_save_hamiltonian, hamiltonian_fname)}")
+            pickle.dump(jw_hamiltonian, filehandler)
+
         if verbose:
             print("# Preparing the cudaq Hamiltonian")
         start = time.time()
