@@ -4,7 +4,6 @@ Contains the main file for running a complete VQE with cudaquantum
 from collections import defaultdict
 
 import numpy as np
-from src.vqe_cudaq_qnp import get_molecular_hamiltonian
 from src.vqe_cudaq_qnp import VQE
 from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
 import pickle
