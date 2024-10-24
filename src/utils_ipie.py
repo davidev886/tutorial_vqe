@@ -224,9 +224,9 @@ def get_molecular_hamiltonian(
         dmrg_states = 500
 
         my_casci.fcisolver = dmrgscf.DMRGCI(molecule, maxM=dmrg_states, tol=1E-10)
-        my_casci.fcisolver.runtimeDir = os.path.abspath(lib.param.TMPDIR)
-        my_casci.fcisolver.scratchDirectory = os.path.abspath(lib.param.TMPDIR)
-        my_casci.fcisolver.threads = 8
+        my_casci.fcisolver.runtimeDir = "./tmp" #os.path.abspath(lib.param.TMPDIR)
+        my_casci.fcisolver.scratchDirectory = "./tmp" # os.path.abspath(lib.param.TMPDIR)
+        my_casci.fcisolver.threads = 16 
         my_casci.fcisolver.memory = int(molecule.max_memory / 1000)  # mem in GB
         my_casci.fcisolver.conv_tol = 1e-14
         if verbose:
