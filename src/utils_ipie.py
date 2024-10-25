@@ -1,8 +1,6 @@
 import numpy as np
 import time
-import os
 from pyscf import gto, scf, ao2mo, mcscf
-import pickle
 
 
 def signature_permutation(orbital_list):
@@ -218,24 +216,8 @@ def get_molecular_hamiltonian(
     X = get_ortho_ao(s1e)
 
     my_casci = mcscf.CASCI(hartee_fock, num_active_orbitals, num_active_electrons)
-    if num_active_orbitals > 12:
-        from pyscf import dmrgscf
-        from pyscf import lib
-        dmrg_states = 500
-
-        my_casci.fcisolver = dmrgscf.DMRGCI(molecule, maxM=dmrg_states, tol=1E-10)
-        my_casci.fcisolver.runtimeDir = "./tmp" #os.path.abspath(lib.param.TMPDIR)
-        my_casci.fcisolver.scratchDirectory = "./tmp" # os.path.abspath(lib.param.TMPDIR)
-        my_casci.fcisolver.threads = 16 
-        my_casci.fcisolver.memory = int(molecule.max_memory / 1000)  # mem in GB
-        my_casci.fcisolver.conv_tol = 1e-14
-        if verbose:
-            print(f"# using dmrg pyscf with {dmrg_states} states")
-            print(f"# using dmrg pyscf in {my_casci.fcisolver.runtimeDir} runtimeDir")
-            print(f"# using dmrg pyscf in {my_casci.fcisolver.scratchDirectory} scratchDirectory")
-    else:
-        ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
-        my_casci.fix_spin_(ss=ss)
+    ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
+    my_casci.fix_spin_(ss=ss)
 
     print('# Start CAS computation')
     e_tot, e_cas, fcivec, mo_output, mo_energy = my_casci.kernel()
@@ -263,11 +245,6 @@ def get_molecular_hamiltonian(
 
         mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
         jw_hamiltonian = jordan_wigner(mol_ham)
-        hamiltonian_fname = (f"ham_{label_molecule}_{basis.lower()}_"
-                             f"{num_active_electrons}e_{num_active_orbitals}o.pickle")
-        with open(os.path.join(dir_save_hamiltonian, hamiltonian_fname), 'wb') as filehandler:
-            print(f"# saving hamiltonian pickle in {os.path.join(dir_save_hamiltonian, hamiltonian_fname)}")
-            pickle.dump(jw_hamiltonian, filehandler)
 
         if verbose:
             print("# Preparing the cudaq Hamiltonian")
