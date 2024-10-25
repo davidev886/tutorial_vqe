@@ -106,3 +106,7 @@ def run():
                                   dir_save_hamiltonian="./",
                                   dmrg=True
                                   )
+
+
+if __name__ == "__main__":
+    run()
