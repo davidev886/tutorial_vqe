@@ -173,6 +173,16 @@ class VQE(object):
             print(f"# Set target {self.target}")
             target = cudaq.get_target()
             self.num_qpus = target.num_qpus()
+            if mpi_support:
+                cudaq.mpi.initialize()
+                num_ranks = cudaq.mpi.num_ranks()
+                rank = cudaq.mpi.rank()
+                print('# rank', rank, 'num_ranks', num_ranks)
+                self.num_qpus = target.num_qpus()
+                if rank == 0:
+                    print(f"# Set target nvidia with options {self.target_option}")
+                    print('# mpi is initialized? ', cudaq.mpi.is_initialized())
+                    print("# num gpus=", target.num_qpus())
 
         elif self.target == 'qpp-cpu':
             print(f"# Set target qpp-cpu")
