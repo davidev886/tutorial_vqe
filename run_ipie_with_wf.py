@@ -46,8 +46,10 @@ energy_fname = list_energy_names[0]
 
 final_state_vector = np.load(os.path.join("best_params", wfname))
 
-afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data, final_state_vector)
-
+afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data,
+                                                       final_state_vector,
+                                                       chol_cut=1e-4,
+                                                       thres_wf=1e-3)
 # Setup the AFQMC parameters
 afqmc_msd = AFQMC.build(
     pyscf_data["mol"].nelec,

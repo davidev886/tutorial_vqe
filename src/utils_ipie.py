@@ -115,7 +115,7 @@ def gen_ipie_input_from_pyscf(
     return ipie_ham
 
 
-def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
+def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4):
     """
     Generate the AFQMC Hamiltonian and trial wavefunction from given SCF data.
 
@@ -131,6 +131,8 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
     :type final_state_vector: numpy.ndarray
     :param chol_cut: The threshold for perfoming the Cholesky decomposition of the two body integrals
     :type chol_cut: float
+    :param thres_wf: The threshold for the wave function coeffients
+    :type thres_wf: float
     :return: A tuple containing the AFQMC Hamiltonian and the trial wavefunction.
     :rtype: tuple
     """
@@ -154,6 +156,7 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5):
 
     wavefunction = get_coeff_wf(final_state_vector,
                                 n_active_electrons=n_active_electrons,
+                                thres=thres_wf
                                 )
 
     trial_wavefunction = ParticleHole(
