@@ -15,16 +15,17 @@ from src.utils_ipie import get_afqmc_data
 import matplotlib.pyplot as plt
 
 num_active_orbitals = 5
-num_active_electrons = 8
-spin = 0
-geometry = "systems/geo_o3.xyz"
-basis = "sto-3g"
+num_active_electrons = 5
+spin = 1
+geometry = "systems/geo_fenta.xyz"
+basis = "cc-pvtz"
 num_vqe_layers = 1
 random_seed = 1
 
 n_qubits = 2 * num_active_orbitals
 data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
                                              basis=basis,
+                                             spin=spin,
                                              num_active_electrons=num_active_electrons,
                                              num_active_orbitals=num_active_orbitals)
 
