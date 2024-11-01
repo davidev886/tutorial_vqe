@@ -27,7 +27,7 @@ def get_coeff_wf(final_state_vector, n_active_electrons, thres=1e-6):
     :returns: Input for ipie trial: coefficients, list of occupied alpha, list of occupied bets
     """
     n_qubits = int(np.log2(final_state_vector.size))
-
+    print(f"# Preparing MSD wf")
     coeff = []
     occas = []
     occbs = []
@@ -50,7 +50,7 @@ def get_coeff_wf(final_state_vector, n_active_electrons, thres=1e-6):
     coeff = coeff[ixs]
     occas = np.array(occas)[ixs]
     occbs = np.array(occbs)[ixs]
-
+    print(f"# MSD prepared with {len(coeff)} determinants")
     return coeff, occas, occbs
 
 
@@ -138,7 +138,7 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4):
     """
     from ipie.hamiltonians.generic import Generic as HamGeneric
     from ipie.trial_wavefunction.particle_hole import ParticleHole
-
+    print("# chol decomposition of hamiltonian")
     h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf(scf_data,
                                                           chol_cut=chol_cut)
 

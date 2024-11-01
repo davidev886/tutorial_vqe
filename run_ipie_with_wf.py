@@ -45,7 +45,7 @@ name_fig = list_fig_names[0]
 energy_fname = list_energy_names[0]
 
 final_state_vector = np.load(os.path.join("best_params", wfname))
-
+print("# preparing hamiltonian & wf")
 afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data,
                                                        final_state_vector,
                                                        chol_cut=1e-4,
