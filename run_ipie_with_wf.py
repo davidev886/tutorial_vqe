@@ -12,6 +12,8 @@ from ipie.qmc.afqmc import AFQMC
 from ipie.analysis.extraction import extract_observable
 from src.utils_ipie import get_afqmc_data
 
+import pickle
+
 import matplotlib.pyplot as plt
 
 num_active_orbitals = 5
@@ -46,10 +48,28 @@ energy_fname = list_energy_names[0]
 
 final_state_vector = np.load(os.path.join("best_params", wfname))
 print("# preparing hamiltonian & wf")
-afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data,
-                                                       final_state_vector,
-                                                       chol_cut=1e-4,
-                                                       thres_wf=1e-3)
+
+create_files = not (os.path.isfile("afqmc_hamiltonian.pickle") and os.path.isfile("trial_wavefunction.pickle"))
+
+if create_files:
+    afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data,
+                                                           final_state_vector,
+                                                           chol_cut=1e-4,
+                                                           thres_wf=1e-3)
+
+    with open("afqmc_hamiltonian.pickle", 'wb') as f:
+        pickle.dump(afqmc_hamiltonian, f)
+
+    with open("trial_wavefunction.pickle", 'wb') as f:
+        pickle.dump(trial_wavefunction, f)
+else:
+    with open("afqmc_hamiltonian.pickle", 'rb') as f:
+        afqmc_hamiltonian = pickle.load(f)
+
+    with open("trial_wavefunction.pickle", 'rb') as f:
+        trial_wavefunction = pickle.load(f)
+
+
 # Setup the AFQMC parameters
 afqmc_msd = AFQMC.build(
     pyscf_data["mol"].nelec,
