@@ -46,6 +46,10 @@ wfname = list_wfname[0]
 name_fig = list_fig_names[0]
 energy_fname = list_energy_names[0]
 
+mol = pyscf_data["mol"]
+print(mol.nelec[0], mol.nelec[1])
+#nelec = (mol.nelec[0] - num_frozen_core, mol.nelec[1] - num_frozen_core)
+
 final_state_vector = np.load(os.path.join("best_params", wfname))
 print("# preparing hamiltonian & wf")
 
@@ -55,7 +59,8 @@ if create_files:
     afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data,
                                                            final_state_vector,
                                                            chol_cut=1e-4,
-                                                           thres_wf=1e-3)
+                                                           thres_wf=1e-3,
+                                                           num_frozen_core)
 
     with open("afqmc_hamiltonian.pickle", 'wb') as f:
         pickle.dump(afqmc_hamiltonian, f)

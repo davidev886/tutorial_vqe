@@ -115,7 +115,7 @@ def gen_ipie_input_from_pyscf(
     return ipie_ham
 
 
-def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4):
+def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4, num_frozen_core=0):
     """
     Generate the AFQMC Hamiltonian and trial wavefunction from given SCF data.
 
@@ -133,6 +133,8 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4):
     :type chol_cut: float
     :param thres_wf: The threshold for the wave function coeffients
     :type thres_wf: float
+    :param num_frozen_core: Number of frozen core orbitals.
+    :type num_frozen_core: int
     :return: A tuple containing the AFQMC Hamiltonian and the trial wavefunction.
     :rtype: tuple
     """
@@ -140,7 +142,8 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4):
     from ipie.trial_wavefunction.particle_hole import ParticleHole
     print("# chol decomposition of hamiltonian")
     h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf(scf_data,
-                                                          chol_cut=chol_cut)
+                                                          chol_cut=chol_cut,
+                                                          num_frozen_core=num_frozen_core)
 
     molecule = scf_data["mol"]
     n_active_electrons = scf_data["num_active_electrons"]
