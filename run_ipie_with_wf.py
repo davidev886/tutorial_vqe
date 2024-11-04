@@ -82,14 +82,14 @@ afqmc_msd = AFQMC.build(
     pyscf_data["mol"].nelec,
     afqmc_hamiltonian,
     trial_wavefunction,
-    num_walkers=1000,
+    num_walkers=2000,
     num_steps_per_block=25,
-    num_blocks=50,
+    num_blocks=100,
     timestep=0.005,
     stabilize_freq=5,
     seed=random_seed,
     pop_control_freq=5,
-    verbose=False)
+    verbose=True)
 
 # Run the AFQMC
 afqmc_msd.run()
