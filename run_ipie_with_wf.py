@@ -47,10 +47,11 @@ name_fig = list_fig_names[0]
 energy_fname = list_energy_names[0]
 
 mol = pyscf_data["mol"]
-print(mol.nelec[0], mol.nelec[1])
-print(mol.nelec[0] - 3, mol.nelec[1] - 2)
-#nelec = (mol.nelec[0] - num_frozen_core, mol.nelec[1] - num_frozen_core)
-num_frozen_core = mol.nelec[0] - 3
+n_alpha = (num_active_orbitals + spin) // 2
+n_beta = (num_active_orbitals - spin) // 2
+assert mol.nelec[0] - n_alpha == mol.nelec[1] - n_beta, "different number of frozen core elec"
+num_frozen_core = mol.nelec[0] - n_alpha
+
 final_state_vector = np.load(os.path.join("best_params", wfname))
 print("# preparing hamiltonian & wf")
 
