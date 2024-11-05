@@ -185,7 +185,7 @@ def get_molecular_hamiltonian(
         chkptfile_rohf=None,
         chkptfile_cas=None,
         geometry=None,
-        basis="cc-pVDZ",
+        basis="sto-3g",
         spin=0,
         charge=0,
         create_cudaq_ham=False,
@@ -235,6 +235,7 @@ def get_molecular_hamiltonian(
         hartee_fock.kernel()
 
     hcore = scf.hf.get_hcore(molecule)
+    print("# hcore.shape", len(hcore))
     s1e = molecule.intor("int1e_ovlp_sph")
     X = get_ortho_ao(s1e)
 
