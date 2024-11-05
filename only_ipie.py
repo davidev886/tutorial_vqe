@@ -72,13 +72,13 @@ afqmc_msd = AFQMC.build(
     pyscf_data["mol"].nelec,
     afqmc_hamiltonian,
     trial_wavefunction,
-    num_walkers=1000,
-    num_steps_per_block=25,
+    num_walkers=5000,
+    num_steps_per_block=10,
     num_blocks=1000,
-    timestep=0.005,
-    stabilize_freq=25,
+    timestep=0.001,
+    stabilize_freq=5,
     seed=random_seed,
-    pop_control_freq=25,
+    pop_control_freq=5,
     verbose=True)
 
 afqmc_msd.run(estimator_filename="afqmc_data_10q.h5")
