@@ -6,6 +6,8 @@ import cudaq
 from cudaq import spin as spin_op
 import time
 from scipy.optimize import minimize
+from datetime import datetime
+import os
 
 
 class VQE(object):
@@ -45,6 +47,7 @@ class VQE(object):
         self.target_option = options.get("target_option", "mgpu")
         self.num_qpus = 0
         self.initial_x_gates_pos = self.prepare_initial_circuit()
+        self.str_date = datetime.today().strftime('%Y%m%d_%H%M%S')
 
     def prepare_initial_circuit(self):
         """
@@ -263,8 +266,28 @@ class VQE(object):
                   "time_vqe": end_t - start_t,
                   "initial_energy": initial_energy + energy_core}
 
+        fname = f"callback_energies_fenta_" \
+                f"cas_{self.n_qubits}q_" \
+                f"layer_{self.n_layers}_opt_{method_optimizer}.dat"
+
+        np.savetxt(os.path.join("data", fname),
+                   callback_energies)
+
+        fname = f"best_params_fenta_" \
+                f"cas_{self.n_qubits}q_" \
+                f"layer_{self.n_layers}_opt_{method_optimizer}.dat"
+
+        np.savetxt(os.path.join("data", fname),
+                   best_parameters)
+
         if return_final_state_vec:
             result["state_vec"] = self.get_state_vector(best_parameters)
+            fname = f"state_vec_fenta_" \
+                    f"cas_{self.n_qubits}q_" \
+                    f"layer_{self.n_layers}_opt_{method_optimizer}.dat"
+
+            np.save(os.path.join("data", fname),
+                    result["state_vec"])
 
         return result
 

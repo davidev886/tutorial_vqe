@@ -1,6 +1,9 @@
 import numpy as np
 import time
 from pyscf import gto, scf, ao2mo, mcscf
+from pyscf.lib import chkfile
+import h5py
+import json
 
 
 def signature_permutation(orbital_list):
@@ -177,9 +180,11 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4, n
 
 
 def get_molecular_hamiltonian(
-        geometry,
         num_active_orbitals,
         num_active_electrons,
+        chkptfile_rohf=None,
+        chkptfile_cas=None,
+        geometry=None,
         basis="cc-pVDZ",
         spin=0,
         charge=0,
@@ -189,10 +194,11 @@ def get_molecular_hamiltonian(
         dir_save_hamiltonian="./") -> dict:
     """
      Compute the molecular Hamiltonian for a given molecule using Hartree-Fock and CASCI methods.
-
-     :param str geometry: Atomic coordinates of the molecule in the format required by PySCF.
      :param int num_active_orbitals: Number of active orbitals for the CASCI calculation.
      :param int num_active_electrons: Number of active electrons for the CASCI calculation.
+     :param chkptfile_rohf: Chkfile from pyscf
+     :param chkptfile_cas: Chkfile for CASCI from pyscf
+     :param geometry: Atomic coordinates of the molecule in the format required by PySCF.
      :param str basis: Basis set to be used for the calculation. Default is 'cc-pVDZ'.
      :param int spin: Spin multiplicity of the molecule. Default is 0.
      :param int charge: Charge of the molecule. Default is 0.
@@ -205,6 +211,12 @@ def get_molecular_hamiltonian(
     :rtype: dict
 
      """
+    if chkptfile_rohf:
+        with h5py.File(chkptfile_rohf, "r") as f:
+            mol_bytes = f["mol"][()]
+            mol = json.loads(mol_bytes.decode('utf-8'))
+            geometry = mol["_atom"]
+
     molecule = gto.M(
         atom=geometry,
         spin=spin,
@@ -212,10 +224,15 @@ def get_molecular_hamiltonian(
         charge=charge,
         verbose=verbose
     )
+
     print('# Start Hartree-Fock computation')
     hartee_fock = scf.ROHF(molecule)
     # Run Hartree-Fock
-    hartee_fock.kernel()
+    if chkptfile_rohf:
+        dm = hartee_fock.from_chk(chkptfile_rohf)
+        hartee_fock.kernel(dm)
+    else:
+        hartee_fock.kernel()
 
     hcore = scf.hf.get_hcore(molecule)
     s1e = molecule.intor("int1e_ovlp_sph")
@@ -226,7 +243,11 @@ def get_molecular_hamiltonian(
     my_casci.fix_spin_(ss=ss)
 
     print('# Start CAS computation')
-    e_tot, e_cas, fcivec, mo_output, mo_energy = my_casci.kernel()
+    if chkptfile_cas:
+        mo = chkfile.load(chkptfile_cas, 'mcscf/mo_coeff')
+        e_tot, e_cas, fcivec, mo, mo_energy = my_casci.kernel(mo)
+    else:
+        e_tot, e_cas, fcivec, mo_output, mo_energy = my_casci.kernel()
     print('# Energy CAS', e_tot)
     h1, energy_core = my_casci.get_h1eff()
     h2 = my_casci.get_h2eff()
