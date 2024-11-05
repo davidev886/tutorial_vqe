@@ -19,18 +19,31 @@ import matplotlib.pyplot as plt
 # !pip install -r requirements.txt 
 # !echo cuda-quantum | sudo -S apt-get install -y cuda-toolkit-11.8 && python -m pip install cupy
 
-num_active_orbitals = 6
-num_active_electrons = 8
-spin = 0
-geometry = "systems/geo_o3.xyz"
-basis = "sto-3g"
+# num_active_orbitals = 6
+# num_active_electrons = 8
+# spin = 0
+# geometry = "systems/geo_o3.xyz"
+# basis = "sto-3g"
+# # basis = "cc-pVDZ"
+# num_vqe_layers = 1
+# random_seed = 1
+# n_qubits = 2 * num_active_orbitals
+
+num_active_orbitals = 5
+num_active_electrons = 5
+spin = 1
+geometry = "systems/geo_fenta.xyz"
+# basis = "sto-3g"
 # basis = "cc-pVDZ"
-num_vqe_layers = 1
+basis = "cc-pVTZ"
+num_vqe_layers = 13
 random_seed = 1
 n_qubits = 2 * num_active_orbitals
 
+
 data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
                                              basis=basis,
+                                             spin=spin,
                                              num_active_electrons=num_active_electrons,
                                              num_active_orbitals=num_active_orbitals,
                                              create_cudaq_ham=True,
@@ -41,11 +54,11 @@ pyscf_data = data_hamiltonian["scf_data"]
 
 MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
 
-optimizer_type = 'Nelder-Mead'
+optimizer_type = 'COBYLA'
 np.random.seed(random_seed)
 
 options = {'n_vqe_layers': num_vqe_layers,
-           'maxiter': 100,
+           'maxiter': 3000,
            'energy_core': pyscf_data["energy_core_cudaq_ham"],
            'return_final_state_vec': True,
            'optimizer': optimizer_type,
@@ -115,7 +128,6 @@ if rank == 0:
     plt.legend()
 
     plt.savefig('vqe_afqmc_plot.png')
-
 
 comm.Barrier()
 
