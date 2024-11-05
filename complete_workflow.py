@@ -1,4 +1,6 @@
 import os
+import h5py
+import json
 os.environ['IPIE_USE_GPU'] = "1"
 
 from ipie.config import config
@@ -8,7 +10,6 @@ from ipie.qmc.afqmc import AFQMC
 from ipie.analysis.extraction import extract_observable
 
 import numpy as np
-import cupy as cp
 
 from src.utils_ipie import get_molecular_hamiltonian
 from src.vqe_cudaq_qnp import VQE
@@ -33,19 +34,20 @@ num_active_orbitals = 5
 num_active_electrons = 5
 spin = 1
 chkptfile_rohf = "systems/FeNTA_spin_1/basis_cc-pVTZ/ROHF/scfref.chk"
-chkptfile_cas = "systems/FeNTA_spin_1/basis_cc-pVTZ/CAS_5_5/mcscf.chk"
-basis = "cc-pVTZ"
 num_vqe_layers = 10
 random_seed = 1
 n_qubits = 2 * num_active_orbitals
 
-data_hamiltonian = get_molecular_hamiltonian(chkptfile_rohf=chkptfile_rohf,
-                                             chkptfile_cas=chkptfile_cas,
-                                             basis=basis,
+with h5py.File(chkptfile_rohf, "r") as f:
+    mol_bytes = f["mol"][()]
+    mol = json.loads(mol_bytes.decode('utf-8'))
+    geometry = mol["_atom"]
+
+data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
                                              spin=spin,
                                              num_active_electrons=num_active_electrons,
                                              num_active_orbitals=num_active_orbitals,
-                                             create_cudaq_ham=True,
+                                             create_cudaq_ham=False,
                                              )
 
 hamiltonian = data_hamiltonian["hamiltonian"]
@@ -78,7 +80,7 @@ vqe_energies = result["callback_energies"]
 final_state_vector = result["state_vec"]
 best_parameters = result["best_parameters"]
 
-
+import cupy as cp
 from mpi4py import MPI
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
