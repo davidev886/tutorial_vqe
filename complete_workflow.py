@@ -47,7 +47,7 @@ data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
                                              spin=spin,
                                              num_active_electrons=num_active_electrons,
                                              num_active_orbitals=num_active_orbitals,
-                                             create_cudaq_ham=False,
+                                             create_cudaq_ham=True,
                                              )
 
 hamiltonian = data_hamiltonian["hamiltonian"]
