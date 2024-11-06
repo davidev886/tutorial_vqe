@@ -32,7 +32,7 @@ import matplotlib.pyplot as plt
 num_active_orbitals = 5
 num_active_electrons = 5
 spin = 1
-chkptfile_rohf = "systems/FeNTA_spin_1/basis_cc-pVTZ/ROHF/scfref.chk"
+chkptfile_rohf = "systems/FeNTA_spin_1/basis_cc-pVTZ/ROHF/scfref.chk" #pyscf output 
 num_vqe_layers = 10
 random_seed = 1
 n_qubits = 2 * num_active_orbitals
