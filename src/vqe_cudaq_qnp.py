@@ -1,13 +1,13 @@
 """
     Contains the class with the VQE using the quantum-number-preserving ansatz
 """
+import os
 import numpy as np
 import cudaq
 from cudaq import spin as spin_op
 import time
 from scipy.optimize import minimize
 from datetime import datetime
-import os
 
 
 class VQE(object):
@@ -266,18 +266,22 @@ class VQE(object):
                   "time_vqe": end_t - start_t,
                   "initial_energy": initial_energy + energy_core}
 
+        cwd = os.getcwd()
+        save_data_dir = os.path.join(cwd, "data")
+        os.makedirs(save_data_dir, exist_ok=True)
+
         fname = f"callback_energies_fenta_" \
                 f"cas_{self.n_qubits}q_" \
                 f"layer_{self.n_layers}_opt_{method_optimizer}.dat"
 
-        np.savetxt(os.path.join("data", fname),
+        np.savetxt(os.path.join(save_data_dir, fname),
                    callback_energies)
 
         fname = f"best_params_fenta_" \
                 f"cas_{self.n_qubits}q_" \
                 f"layer_{self.n_layers}_opt_{method_optimizer}.dat"
 
-        np.savetxt(os.path.join("data", fname),
+        np.savetxt(os.path.join(save_data_dir, fname),
                    best_parameters)
 
         if return_final_state_vec:
@@ -286,7 +290,7 @@ class VQE(object):
                     f"cas_{self.n_qubits}q_" \
                     f"layer_{self.n_layers}_opt_{method_optimizer}.dat"
 
-            np.save(os.path.join("data", fname),
+            np.save(os.path.join(save_data_dir, fname),
                     result["state_vec"])
 
         return result
