@@ -121,7 +121,7 @@ if rank == 0:
     plt.ylabel("Energy [Ha]")
     plt.legend()
 
-    plt.savefig('vqe_afqmc_plot.png')
+    plt.savefig('vqe_afqmc_plot_24.png')
 
 comm.Barrier()
 
