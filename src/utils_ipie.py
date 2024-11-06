@@ -217,7 +217,7 @@ def get_molecular_hamiltonian(
             mol = json.loads(mol_bytes.decode('utf-8'))
             # in Bohr
             geometry = mol["_atom"]
-            basis = mol["basis"]
+            basis = str(mol["basis"]).replace('\"', "").replace('\'', "")
             charge = int(mol["charge"])
             spin = int(mol["spin"])
             unit = mol["unit"]
