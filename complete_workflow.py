@@ -33,7 +33,8 @@ import matplotlib.pyplot as plt
 num_active_orbitals = 5
 num_active_electrons = 5
 spin = 1
-chkptfile_rohf = "systems/FeNTA_spin_1/basis_cc-pVTZ/ROHF/scfref.chk"
+chkptfile_rohf = "chkfiles/scf_fenta_sd_converged.chk"
+chkptfile_cas = "chkfiles/mcscf_fenta_converged.chk"
 num_vqe_layers = 10
 random_seed = 1
 n_qubits = 2 * num_active_orbitals
@@ -43,8 +44,8 @@ with h5py.File(chkptfile_rohf, "r") as f:
     mol = json.loads(mol_bytes.decode('utf-8'))
     geometry = mol["_atom"]
 
-data_hamiltonian = get_molecular_hamiltonian(geometry=geometry,
-                                             spin=spin,
+data_hamiltonian = get_molecular_hamiltonian(chkptfile_rohf=chkptfile_rohf,
+                                             chkptfile_cas=chkptfile_cas,
                                              num_active_electrons=num_active_electrons,
                                              num_active_orbitals=num_active_orbitals,
                                              create_cudaq_ham=True,
@@ -95,13 +96,13 @@ afqmc_msd = AFQMC.build(
     pyscf_data["mol"].nelec,
     afqmc_hamiltonian,
     trial_wavefunction,
-    num_walkers=1000,
+    num_walkers=2000,
     num_steps_per_block=25,
     num_blocks=1000,
-    timestep=0.005,
-    stabilize_freq=25,
+    timestep=0.001,
+    stabilize_freq=5,
     seed=random_seed,
-    pop_control_freq=25,
+    pop_control_freq=5,
     verbose=True)
 
 afqmc_msd.run(estimator_filename="afqmc_data_10q.h5")
