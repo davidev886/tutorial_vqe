@@ -39,11 +39,6 @@ num_vqe_layers = 10
 random_seed = 1
 n_qubits = 2 * num_active_orbitals
 
-with h5py.File(chkptfile_rohf, "r") as f:
-    mol_bytes = f["mol"][()]
-    mol = json.loads(mol_bytes.decode('utf-8'))
-    geometry = mol["_atom"]
-
 data_hamiltonian = get_molecular_hamiltonian(chkptfile_rohf=chkptfile_rohf,
                                              chkptfile_cas=chkptfile_cas,
                                              num_active_electrons=num_active_electrons,
