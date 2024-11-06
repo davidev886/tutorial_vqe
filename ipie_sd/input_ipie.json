@@ -1,0 +1,25 @@
+{
+    "system": {
+        "nup": 72,
+        "ndown": 71
+    },
+    "hamiltonian": {
+        "name": "Generic",
+        "integrals": "hamiltonian.h5"
+    },
+    "qmc": {
+        "dt": 0.001,
+        "nwalkers": 2000,
+        "nsteps": 25,
+        "blocks": 1000,
+        "batched": true,
+        "pop_control_freq": 5,
+        "stabilise_freq": 5
+    },
+    "trial": {
+        "filename": "wavefunction.h5"
+    },
+    "estimators": {
+        "filename": "estimates.0.h5"
+    }
+}
