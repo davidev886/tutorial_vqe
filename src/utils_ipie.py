@@ -215,13 +215,19 @@ def get_molecular_hamiltonian(
         with h5py.File(chkptfile_rohf, "r") as f:
             mol_bytes = f["mol"][()]
             mol = json.loads(mol_bytes.decode('utf-8'))
+            # in Bohr
             geometry = mol["_atom"]
+            basis = mol["basis"]
+            charge = int(mol["charge"])
+            spin = int(mol["spin"])
+            unit = mol["unit"]
 
     molecule = gto.M(
         atom=geometry,
         spin=spin,
         basis=basis,
         charge=charge,
+        unit=unit,  # Bohr
         verbose=verbose
     )
 
