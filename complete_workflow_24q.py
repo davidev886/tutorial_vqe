@@ -100,14 +100,14 @@ afqmc_msd = AFQMC.build(
     pop_control_freq=5,
     verbose=True)
 
-afqmc_msd.run(estimator_filename="afqmc_data_10q.h5")
+afqmc_msd.run(estimator_filename="afqmc_data_24q.h5")
 
 afqmc_msd.finalise(verbose=False)
 
 if rank == 0:
     qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
-    np.savetxt("10q_vqe_energy.dat", vqe_energies)
-    np.savetxt("10q_afqmc_energy.dat", list(qmc_data["ETotal"]))
+    np.savetxt("24q_vqe_energy.dat", vqe_energies)
+    np.savetxt("24q_afqmc_energy.dat", list(qmc_data["ETotal"]))
 
     vqe_y = vqe_energies
     vqe_x = list(range(len(vqe_y)))
