@@ -20,16 +20,6 @@ import matplotlib.pyplot as plt
 # !pip install -r requirements.txt
 # !echo cuda-quantum | sudo -S apt-get install -y cuda-toolkit-11.8 && python -m pip install cupy
 
-# num_active_orbitals = 6
-# num_active_electrons = 8
-# spin = 0
-# geometry = "systems/geo_o3.xyz"
-# basis = "sto-3g"
-# # basis = "cc-pVDZ"
-# num_vqe_layers = 1
-# random_seed = 1
-# n_qubits = 2 * num_active_orbitals
-
 num_active_orbitals = 5
 num_active_electrons = 5
 spin = 1
@@ -39,6 +29,7 @@ num_vqe_layers = 10
 random_seed = 1
 n_qubits = 2 * num_active_orbitals
 
+# Get the molecular Hamiltonian and molecular data from pyscf
 data_hamiltonian = get_molecular_hamiltonian(chkptfile_rohf=chkptfile_rohf,
                                              chkptfile_cas=chkptfile_cas,
                                              num_active_electrons=num_active_electrons,
@@ -51,9 +42,11 @@ pyscf_data = data_hamiltonian["scf_data"]
 
 # MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
 
+# Define optimization methods for VQE
 optimizer_type = 'COBYLA'
 np.random.seed(random_seed)
 
+# Define options for the VQE algorithm
 options = {'n_vqe_layers': num_vqe_layers,
            'maxiter': 1500,
            'energy_core': pyscf_data["energy_core_cudaq_ham"],
@@ -62,15 +55,19 @@ options = {'n_vqe_layers': num_vqe_layers,
            'target': 'nvidia',
            'target_option': 'mqpu'}
 
+# Initialize the VQE algorithm
 vqe = VQE(n_qubits=n_qubits,
           num_active_electrons=num_active_electrons,
           spin=spin,
           options=options)
 
+# Set initial parameters for the VQE algorithm
 vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
 
+# Execute the VQE algorithm
 result = vqe.execute(hamiltonian)
 
+# Extract results from the VQE execution
 optimized_energy = result['energy_optimized']
 vqe_energies = result["callback_energies"]
 final_state_vector = result["state_vec"]
@@ -85,8 +82,11 @@ cp.cuda.Device(rank).use()
 
 # final_state_vector = np.load('final_state_vector.npy')
 
+# Get AFQMC data (hamiltonian and trial wave function) in ipie format
+# using the molecular data from pyscf and the final state vector from VQE
 afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data, final_state_vector)
 
+# Initialize AFQMC
 afqmc_msd = AFQMC.build(
     pyscf_data["mol"].nelec,
     afqmc_hamiltonian,
@@ -100,10 +100,12 @@ afqmc_msd = AFQMC.build(
     pop_control_freq=5,
     verbose=True)
 
+# Run the AFQMC simulation and save data to .h5 file
 afqmc_msd.run(estimator_filename="afqmc_data_10q.h5")
 
 afqmc_msd.finalise(verbose=False)
 
+# Extract and plot results
 if rank == 0:
     qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
     np.savetxt("10q_vqe_energy.dat", vqe_energies)

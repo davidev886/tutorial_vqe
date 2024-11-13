@@ -142,7 +142,7 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4, n
     :rtype: tuple
     """
     from ipie.hamiltonians.generic import Generic as HamGeneric
-    from ipie.trial_wavefunction.particle_hole import ParticleHole
+    from ipie.trial_wavefunction.particle_hole import ParticleHole, ParticleHoleNonChunked
     print("# chol decomposition of hamiltonian")
     h1e, cholesky_vectors, e0 = gen_ipie_input_from_pyscf(scf_data,
                                                           chol_cut=chol_cut,
@@ -165,7 +165,7 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4, n
                                 thres=thres_wf
                                 )
 
-    trial_wavefunction = ParticleHole(
+    trial_wavefunction = ParticleHoleNonChunked(
         wavefunction,
         molecule.nelec,
         afqmc_hamiltonian.nbasis,
