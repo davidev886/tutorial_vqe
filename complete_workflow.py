@@ -1,12 +1,10 @@
-print('hi im working')
-
 import os
 import h5py
 import json
 from ipie.config import config
 
-os.environ['IPIE_USE_GPU'] = "0"
-config.update_option("use_gpu", False)
+os.environ['IPIE_USE_GPU'] = "1"
+config.update_option("use_gpu", True)
 
 from ipie.qmc.afqmc import AFQMC
 from ipie.analysis.extraction import extract_observable
@@ -21,14 +19,41 @@ import matplotlib.pyplot as plt
 
 # !pip install -r requirements.txt
 # !echo cuda-quantum | sudo -S apt-get install -y cuda-toolkit-11.8 && python -m pip install cupy
+# ! sudo -S apt-get install -y cuda-toolkit-12.6
 
+system = 'o3' 
+# system = '10q' 
+# system = '24q' 
 
-num_active_orbitals = 5
-num_active_electrons = 5
-spin = 1
-chkptfile_rohf = "chkfiles/scf_fenta_sd_converged.chk"
-chkptfile_cas = "chkfiles/10q/mcscf_fenta_converged_10q.chk"
-num_vqe_layers = 1
+if system == 'o3':
+
+    num_active_orbitals = 6
+    num_active_electrons = 8
+    spin = 0
+    geometry = "systems/geo_o3.xyz"
+    basis = "sto-3g"
+    # basis = "cc-pVDZ"
+    num_walkers = 200
+
+elif system == '10q':
+
+    num_active_orbitals = 5
+    num_active_electrons = 5
+    spin = 1
+    chkptfile_rohf = "chkfiles/scf_fenta_sd_converged.chk"
+    chkptfile_cas = "chkfiles/10q/mcscf_fenta_converged_10q.chk"
+    num_walkers = 200 
+
+elif system == '24q':
+    
+    num_active_orbitals = 12
+    num_active_electrons = 9
+    spin = 1
+    chkptfile_rohf = "chkfiles/scf_fenta_sd_converged.chk"
+    chkptfile_cas = "chkfiles/24q/mcscf_fenta_converged_24q.chk"
+    num_walkers = 200 
+
+num_vqe_layers = 10
 random_seed = 1
 n_qubits = 2 * num_active_orbitals
 
@@ -43,20 +68,21 @@ data_hamiltonian = get_molecular_hamiltonian(chkptfile_rohf=chkptfile_rohf,
 hamiltonian = data_hamiltonian["hamiltonian"]
 pyscf_data = data_hamiltonian["scf_data"]
 
+# MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
+
 # Define optimization methods for VQE
 optimizer_type = 'COBYLA'
 np.random.seed(random_seed)
 
 # Define options for the VQE algorithm
 options = {'n_vqe_layers': num_vqe_layers,
-           'maxiter': 1,
+           'maxiter': 100,
            'energy_core': pyscf_data["energy_core_cudaq_ham"],
            'return_final_state_vec': True,
            'optimizer': optimizer_type,
-           'target': 'nvidia'
-           }
+           'target': 'nvidia',
+           'target_option': 'mqpu'}
 
-# 'target_option': 'mqpu'
 
 # Initialize the VQE algorithm
 vqe = VQE(n_qubits=n_qubits,
@@ -76,10 +102,9 @@ vqe_energies = result["callback_energies"]
 final_state_vector = result["state_vec"]
 best_parameters = result["best_parameters"]
 
-np.save('final_state_vector.npy', final_state_vector)
+np.save('final_state_vector_' + system + '.npy', final_state_vector)
 
-
-final_state_vector = np.load('final_state_vector.npy')
+final_state_vector = np.load('final_state_vector_' + system + '.npy')
 
 # Get AFQMC data (hamiltonian and trial wave function) in ipie format
 # using the molecular data from pyscf and the final state vector from VQE
@@ -90,7 +115,7 @@ afqmc_msd = AFQMC.build(
     pyscf_data["mol"].nelec,
     afqmc_hamiltonian,
     trial_wavefunction,
-    num_walkers=2,
+    num_walkers=num_walkers,
     num_steps_per_block=25,
     num_blocks=10,
     timestep=0.001,
@@ -100,14 +125,15 @@ afqmc_msd = AFQMC.build(
     verbose=True)
 
 # Run the AFQMC simulation and save data to .h5 file
-afqmc_msd.run(estimator_filename="afqmc_data_10q.h5")
+afqmc_msd.run(estimator_filename='afqmc_data_' +system+ '.h5')
+
 
 afqmc_msd.finalise(verbose=False)
 
 # Extract and plot results
 qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
-np.savetxt("10q_vqe_energy.dat", vqe_energies)
-np.savetxt("10q_afqmc_energy.dat", list(qmc_data["ETotal"]))
+np.savetxt(system + '_vqe_energy.dat', vqe_energies)
+np.savetxt(system + '_afqmc_energy.dat', list(qmc_data["ETotal"]))
 
 vqe_y = vqe_energies
 vqe_x = list(range(len(vqe_y)))
@@ -121,7 +147,4 @@ plt.xlabel("Optimization steps")
 plt.ylabel("Energy [Ha]")
 plt.legend()
 
-plt.savefig('vqe_afqmc_10q_plot.png')
-
-
-print('im done')
+plt.savefig('vqe_afqmc_'+system+'_plot.png')

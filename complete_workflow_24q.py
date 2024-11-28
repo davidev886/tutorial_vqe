@@ -76,6 +76,9 @@ vqe_energies = result["callback_energies"]
 final_state_vector = result["state_vec"]
 best_parameters = result["best_parameters"]
 
+np.save('final_state_vector_24q.npy', final_state_vector)
+
+
 import cupy as cp
 from mpi4py import MPI
 comm = MPI.COMM_WORLD
@@ -83,7 +86,7 @@ rank = comm.Get_rank()
 os.environ["CUDA_VISIBLE_DEVICES"] = str(rank)
 cp.cuda.Device(rank).use()
 
-# final_state_vector = np.load('final_state_vector.npy')
+final_state_vector = np.load('final_state_vector_24q.npy')
 
 afqmc_hamiltonian, trial_wavefunction = get_afqmc_data(pyscf_data, final_state_vector)
 
