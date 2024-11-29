@@ -3,7 +3,7 @@ import h5py
 import json
 from ipie.config import config
 
-os.environ['IPIE_USE_GPU'] = "1"
+# os.environ['IPIE_USE_GPU'] = "1"
 config.update_option("use_gpu", True)
 
 from ipie.qmc.afqmc import AFQMC
@@ -22,7 +22,7 @@ import matplotlib.pyplot as plt
 # ! sudo -S apt-get install -y cuda-toolkit-12.6
 
 system = 'o3' 
-# system = '10q' 
+system = '10q' 
 # system = '24q' 
 
 if system == 'o3':
