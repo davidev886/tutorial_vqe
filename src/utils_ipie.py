@@ -165,7 +165,7 @@ def get_afqmc_data(scf_data, final_state_vector, chol_cut=1e-5, thres_wf=1e-4, n
                                 thres=thres_wf
                                 )
 
-    trial_wavefunction = ParticleHoleNonChunked(
+    trial_wavefunction = ParticleHole(
         wavefunction,
         molecule.nelec,
         afqmc_hamiltonian.nbasis,

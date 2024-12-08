@@ -2,9 +2,10 @@ import os
 import h5py
 import json
 from ipie.config import config
+config.update_option("use_gpu", True)
 
 # os.environ['IPIE_USE_GPU'] = "1"
-config.update_option("use_gpu", True)
+# config.update_option("use_gpu", True)
 
 from ipie.qmc.afqmc import AFQMC
 from ipie.analysis.extraction import extract_observable
@@ -126,7 +127,6 @@ afqmc_msd = AFQMC.build(
 
 # Run the AFQMC simulation and save data to .h5 file
 afqmc_msd.run(estimator_filename='afqmc_data_' +system+ '.h5')
-
 
 afqmc_msd.finalise(verbose=False)
 
