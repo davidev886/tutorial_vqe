@@ -48,9 +48,9 @@ elif system == '10q':
     num_vqe_layers = 10
     optimizer_type = 'COBYLA'
     vqe_max_iterations = 200 
-    num_walkers = 100
-    num_steps_per_block=25
-    num_blocks=1000
+    num_walkers = 9600  #number of walkers per MPI process - total walkers = n_walkers * n_mpi_processes
+    num_blocks=10
+    num_steps_per_block=1 #total n_steps = n_blocks * n_steps_per_block
     timestep=0.001
 
 elif system == '24q':
@@ -93,24 +93,24 @@ options = {'n_vqe_layers': num_vqe_layers,
 
 
 # Initialize the VQE algorithm
-vqe = VQE(n_qubits=n_qubits,
-          num_active_electrons=num_active_electrons,
-          spin=spin,
-          options=options)
+# vqe = VQE(n_qubits=n_qubits,
+#           num_active_electrons=num_active_electrons,
+#           spin=spin,
+#           options=options)
 
-# Set initial parameters for the VQE algorithm
-vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
+# # Set initial parameters for the VQE algorithm
+# vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
 
 # Execute the VQE algorithm
-result = vqe.execute(hamiltonian)
+# result = vqe.execute(hamiltonian)
 
 # Extract results from the VQE execution
-optimized_energy = result['energy_optimized']
-vqe_energies = result["callback_energies"]
-final_state_vector = result["state_vec"]
-best_parameters = result["best_parameters"]
+# optimized_energy = result['energy_optimized']
+# vqe_energies = result["callback_energies"]
+# final_state_vector = result["state_vec"]
+# best_parameters = result["best_parameters"]
 
-np.save('final_state_vector_' + system + '.npy', final_state_vector)
+# np.save('final_state_vector_' + system + '.npy', final_state_vector)
 
 final_state_vector = np.load('final_state_vector_' + system + '.npy')
 
