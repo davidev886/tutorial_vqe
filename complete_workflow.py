@@ -12,8 +12,6 @@ from src.vqe_cudaq_qnp import VQE
 from src.utils_ipie import get_afqmc_data
 import matplotlib.pyplot as plt
 
-
-
 # system = 'o3' 
 system = '10q' 
 # system = '24q' 
