@@ -15,7 +15,7 @@ from ipie.analysis.extraction import extract_observable
 import numpy as np
 
 from src.utils_ipie import get_molecular_hamiltonian
-# from src.vqe_cudaq_qnp import VQE
+from src.vqe_cudaq_qnp import VQE
 from src.utils_ipie import get_afqmc_data
 
 from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
@@ -91,43 +91,42 @@ data_hamiltonian = get_molecular_hamiltonian(chkptfile_rohf=chkptfile_rohf,
                                              create_cudaq_ham=False,
                                              )
 
-hamiltonian = data_hamiltonian["hamiltonian"]
 pyscf_data = data_hamiltonian["scf_data"]
 
 # MINIMIZE_METHODS = ['Nelder-Mead', 'Powell', 'CG', 'BFGS', 'L-BFGS-B', 'TNC', 'COBYLA', 'SLSQP']
 
 # # Define optimization methods for VQE
-# np.random.seed(random_seed)
+np.random.seed(random_seed)
 
-# # Define options for the VQE algorithm
-# options = {'n_vqe_layers': num_vqe_layers,
-#            'maxiter': maxiter_vqe,
-#            'energy_core': pyscf_data["energy_core_cudaq_ham"],
-#            'return_final_state_vec': True,
-#            'optimizer': optimizer_type,
-#            'target': 'nvidia',
-#            'target_option': 'mqpu'}
+# Define options for the VQE algorithm
+options = {'n_vqe_layers': num_vqe_layers,
+           'maxiter': maxiter_vqe,
+           'energy_core': energy_core_cudaq_ham,
+           'return_final_state_vec': True,
+           'optimizer': optimizer_type,
+           'target': 'nvidia',
+           'target_option': 'mqpu'}
 
 
-# # Initialize the VQE algorithm
-# vqe = VQE(n_qubits=n_qubits,
-#           num_active_electrons=num_active_electrons,
-#           spin=spin,
-#           options=options)
+# Initialize the VQE algorithm
+vqe = VQE(n_qubits=n_qubits,
+          num_active_electrons=num_active_electrons,
+          spin=spin,
+          options=options)
 
-# # Set initial parameters for the VQE algorithm
-# vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
+# Set initial parameters for the VQE algorithm
+vqe.options['initial_parameters'] = np.random.rand(vqe.num_params)
 
-# # Execute the VQE algorithm
-# result = vqe.execute(hamiltonian)
+# Execute the VQE algorithm
+result = vqe.execute(hamiltonian_cudaq)
 
-# # Extract results from the VQE execution
-# optimized_energy = result['energy_optimized']
-# vqe_energies = result["callback_energies"]
-# final_state_vector = result["state_vec"]
-# best_parameters = result["best_parameters"]
+# Extract results from the VQE execution
+optimized_energy = result['energy_optimized']
+vqe_energies = result["callback_energies"]
+final_state_vector = result["state_vec"]
+best_parameters = result["best_parameters"]
 
-# np.save('final_state_vector_' + system + '.npy', final_state_vector)
+np.save('final_state_vector_' + system + '.npy', final_state_vector)
 
 final_state_vector = np.load('final_state_vector_' + system + '.npy')
 
@@ -156,7 +155,7 @@ afqmc_msd.finalise(verbose=False)
 
 # Extract and plot results
 qmc_data = extract_observable(afqmc_msd.estimators.filename, "energy")
-# np.savetxt(system + '_vqe_energy.dat', vqe_energies)
+np.savetxt(system + '_vqe_energy.dat', vqe_energies)
 np.savetxt(system + '_afqmc_energy.dat', list(qmc_data["ETotal"]))
 
 # vqe_y = vqe_energies
