@@ -1,0 +1,7 @@
+Basis: def2-QZVPP
+Spin: 5
+Active Space:
+	Orbitals: 36
+	Electrons: 49
+Use DMRGCASCI with maxM = 1000
+Reference Energy: -2149.57505352752

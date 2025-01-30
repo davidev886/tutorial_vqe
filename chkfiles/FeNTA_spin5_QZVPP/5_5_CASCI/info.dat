@@ -1,0 +1,7 @@
+Basis: def2-QZVPP
+Spin: 5
+Active Space:
+	Orbitals: 5
+	Electrons: 5
+Use CASCI
+Reference Energy: -2149.43889716706
