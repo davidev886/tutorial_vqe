@@ -1,9 +1,11 @@
 import numpy as np
 import time
-from pyscf import gto, scf, ao2mo, mcscf
+from pyscf import gto, scf, ao2mo, mcscf, lib
 from pyscf.lib import chkfile
+from pyscf import dmrgscf
 import h5py
 import json
+import os
 
 
 def signature_permutation(orbital_list):
@@ -246,8 +248,20 @@ def get_molecular_hamiltonian(
     X = get_ortho_ao(s1e)
 
     my_casci = mcscf.CASCI(hartee_fock, num_active_orbitals, num_active_electrons)
-    ss = (molecule.spin / 2 * (molecule.spin / 2 + 1))
-    my_casci.fix_spin_(ss=ss)
+
+    if num_active_orbitals > 12:
+        omp_num_threads = int(os.getenv('OMP_NUM_THREADS', 8))
+        print(f'# running with OMP_NUM_THREADS: {omp_num_threads}')
+        my_casci.fcisolver = dmrgscf.DMRGCI(mol, maxM=1000, tol=1E-10)
+        my_casci.fcisolver.runtimeDir = os.path.abspath(lib.param.TMPDIR)
+        my_casci.fcisolver.scratchDirectory = os.path.abspath(lib.param.TMPDIR)
+        my_casci.fcisolver.threads = omp_num_threads
+        my_casci.fcisolver.memory = int(mol.max_memory / 1000)  # mem in GB
+        my_casci.fcisolver.conv_tol = 1e-14
+
+    # Run CASCI with mo coefficients from file chkptfile_cas
+    mo = chkfile.load(chkptfile_cas, 'mcscf/mo_coeff')
+    e_tot, e_cas, fcivec, mo_output, mo_energy = my_casci.kernel(mo)
 
     print('# Start CAS computation')
     if chkptfile_cas:
@@ -274,7 +288,7 @@ def get_molecular_hamiltonian(
 
     if create_cudaq_ham:
         from src.vqe_cudaq_qnp import get_cudaq_hamiltonian
-        from openfermion.transforms import jordan_wigner
+        from openfermion import jordan_wigner
         from openfermion import generate_hamiltonian
 
         mol_ham = generate_hamiltonian(h1, tbi, energy_core.item())
