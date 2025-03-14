@@ -2,7 +2,6 @@ import numpy as np
 import time
 from pyscf import gto, scf, ao2mo, mcscf, lib
 from pyscf.lib import chkfile
-from pyscf import dmrgscf
 import h5py
 import json
 import os
@@ -250,6 +249,7 @@ def get_molecular_hamiltonian(
     my_casci = mcscf.CASCI(hartee_fock, num_active_orbitals, num_active_electrons)
 
     if num_active_orbitals > 12:
+        from pyscf import dmrgscf
         omp_num_threads = int(os.getenv('OMP_NUM_THREADS', 8))
         print(f'# running with OMP_NUM_THREADS: {omp_num_threads}')
         my_casci.fcisolver = dmrgscf.DMRGCI(mol, maxM=1000, tol=1E-10)
