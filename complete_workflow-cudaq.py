@@ -1,8 +1,8 @@
 import os
 import h5py
 import json
-from ipie.config import config
-config.update_option("use_gpu", True)
+# from ipie.config import config
+# config.update_option("use_gpu", True)
 
 
 # os.environ['IPIE_USE_GPU'] = "1"
@@ -111,9 +111,9 @@ vqe_energies = result["callback_energies"]
 final_state_vector = result["state_vec"]
 best_parameters = result["best_parameters"]
 
-# np.save('final_state_vector_' + system + '.npy', final_state_vector)
+np.save('final_state_vector_' + system + '.npy', final_state_vector)
 
-# final_state_vector = np.load('final_state_vector_' + system + '.npy')
+final_state_vector = np.load('final_state_vector_' + system + '.npy')
 
 # Get AFQMC data (hamiltonian and trial wave function) in ipie format
 # using the molecular data from pyscf and the final state vector from VQE
